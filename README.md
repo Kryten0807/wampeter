@@ -15,21 +15,22 @@ The term *wampeter* comes from
 the author as "an object around which the lives of many otherwise unrelated
 people may revolve."
 
+# Original README
 
-# Nightlife-Rabbit
+## Nightlife-Rabbit
 
 A [WAMP](http://wamp.ws)-Router implementation for [node.js](http://nodejs.org).
 At the moment, WAMP basic profile in the roles of dealer and broker are supported.
 For client connections: publish/subscribe and remote procedure register/call,
 [AutobahnJS](http://autobahn.ws/js) can be used.
 
-## Install
+### Install
 
 ```
 npm install --save git+https://github.com/christian-raedel/nightlife-rabbit
 ```
 
-## Basic Usage
+### Basic Usage
 
 ``` Javascript
 var http       = require('http')
@@ -68,6 +69,6 @@ client.onopen = function (session) {
 client.open();
 ```
 
-## Advanced Usage
+### Advanced Usage
 
 Please see the examples directory of this repository.
