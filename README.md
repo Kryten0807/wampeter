@@ -1,4 +1,22 @@
 
+# Wampeter
+
+This is a rewrite of the [Nightlife-Rabbit](https://github.com/christian-raedel/nightlife-rabbit)
+project with two goals: first, to translate it into Coffeescript (because I
+prefer CS to plain old Javascript), and second, to implement some of the
+advanced WAMP features (specifically authentication, which I need for a project
+I'm working on).
+
+## What's with the name?
+
+The term *wampeter* comes from
+[Kurt Vonnegut](https://en.wikipedia.org/wiki/Kurt_Vonnegut)'s novel
+[*Cat's Cradle*](https://en.wikipedia.org/wiki/Cat%27s_Cradle). It is defined by
+the author as "an object around which the lives of many otherwise unrelated
+people may revolve."
+
+
+# Nightlife-Rabbit
 
 A [WAMP](http://wamp.ws)-Router implementation for [node.js](http://nodejs.org).
 At the moment, WAMP basic profile in the roles of dealer and broker are supported.
