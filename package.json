@@ -16,9 +16,11 @@
     "router"
   ],
   "author": "Dave Thomas",
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Christian Rädel"
-  }],
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Kryten0807/wampeter/issues"
@@ -30,7 +32,8 @@
     "chai-as-promised": "^4.1.1",
     "chai-spies": "^0.5.1",
     "jsdoc": "^3.3.0-alpha9",
-    "mocha": "^1.21.4"
+    "mocha": "^1.21.4",
+    "gulp": "~3.9.1"
   },
   "dependencies": {
     "debug": "^2.0.0",
