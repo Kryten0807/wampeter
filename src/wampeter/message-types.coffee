@@ -183,6 +183,7 @@ TYPES =
         decode: (data)->
             return new Message(data).set('invocation.request.id').set('options').set('args').set('kwargs').get()
 
+
 module.exports.TYPES = TYPES;
 
 
