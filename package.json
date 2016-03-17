@@ -1,6 +1,6 @@
 {
-  "name": "nightlife-rabbit",
-  "version": "0.2.0",
+  "name": "wampeter",
+  "version": "0.1.0",
   "description": "A WAMP router implementation.",
   "main": "index.js",
   "scripts": {
@@ -8,19 +8,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/christian-raedel/nightlife-rabbit.git"
+    "url": "https://github.com/Kryten0807/wampeter.git"
   },
   "keywords": [
     "WAMP",
     "websocket",
     "router"
   ],
-  "author": "Christian Rädel",
+  "author": "Dave Thomas",
+  "contributors": [{
+      "name": "Christian Rädel"
+  }],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/christian-raedel/nightlife-rabbit/issues"
+    "url": "https://github.com/Kryten0807/wampeter/issues"
   },
-  "homepage": "https://github.com/christian-raedel/nightlife-rabbit",
+  "homepage": "https://github.com/Kryten0807/wampeter",
   "devDependencies": {
     "autobahn": "^0.9.4-2",
     "chai": "^1.9.1",
