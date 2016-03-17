@@ -15,8 +15,7 @@ _               = require('lodash')
 class Router extends WebSocketServer
     constructor: (opts)->
         @config = new CConf('router', [], {
-            # @todo try changing this path
-            'path'             : '/nightlife'
+            'path'             : '/wampeter'
             'autoCreateRealms' : true
         }).load(opts || {})
 
