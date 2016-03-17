@@ -5,7 +5,7 @@ var coffee = require('gulp-coffee');
 
 gulp.task('build', function () {
     gulp.src('./src/wampeter/**/*.coffee')
-        .pipe(coffee({bare: true}))
+        .pipe(coffee({bare: false}))
         .pipe(gulp.dest('./lib'));
 });
 
