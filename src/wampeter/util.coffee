@@ -13,7 +13,7 @@ logger = null
  * @return {CLogger} The global logger instance
 ###
 module.exports.logger = ()->
-    if not logger instanceof CLogger
+    if not logger? or not logger instanceof CLogger
         logger = new CLogger({name: 'wampeter-router'})
     logger
 
@@ -29,7 +29,7 @@ parser = null
  * @return {MessageParser} The global parser instance
 ###
 module.exports.parser = (opts)->
-    if not parser instanceof MessageParser
+    if not parser? or not parser instanceof MessageParser
         parser = new MessageParser(opts)
 
     parser
