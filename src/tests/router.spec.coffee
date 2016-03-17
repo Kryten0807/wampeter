@@ -124,8 +124,12 @@ describe('Router:Publish/Subscribe', ()->
 
     it('should publish to a topic', (done)->
         expect(session.isOpen).to.be.true
-        session.publish('com.example.inge', ['hello inge!'], {to: 'inge'}, {acknowledge: true})
-        .then((published)->
+        session.publish(
+            'com.example.inge',
+            ['hello inge!'],
+            {to: 'inge'},
+            {acknowledge: true}
+        ).then((published)->
             expect(published).to.have.property('id')
         ).catch((err)->
             done(new Error(err.stack))
