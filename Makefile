@@ -10,7 +10,6 @@ test:
 	@echo "************************"
 	@echo "* TEST LIBRARY         *"
 	@echo "************************"
-	@cat .dev-logo
 	@./node_modules/.bin/mocha --recursive test/*.spec.js
 
 docs:
