@@ -171,12 +171,8 @@ class Router extends WebSocketServer
             throw new TypeError('wamp.error.invalid_uri')
 
 
-
-
-
-
-
 module.exports.Router = Router
+
 
 module.exports.createRouter = (opts)-> new Router(opts)
 
