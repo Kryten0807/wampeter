@@ -53,8 +53,7 @@ class Session extends EventEmitter
             logger.error('cannot send %s message!', type, opts, err.stack)
         ).done()
 
-
-    error = (type, id, err)=>
+    error: (type, id, err)=>
         if _.isString(type) and _.isNumber(id) and (err instanceof Error)
             @send('ERROR', {
                 request:
