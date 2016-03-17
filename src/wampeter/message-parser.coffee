@@ -5,8 +5,6 @@ engine = require('dna').createDNA()
 q      = require('q')
 _      = require('lodash')
 
-
-
 class MessageParser
     constructor: (opts)->
         @config = new CConf(
@@ -144,7 +142,6 @@ class MessageParser
             catch err
                 throw new TypeError('wamp.error.invalid_json')
         )
-
 
 
 module.exports = MessageParser
