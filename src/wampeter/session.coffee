@@ -9,9 +9,6 @@ q            = require('q')
 _            = require('lodash')
 
 
-
-
-
 class Session extends EventEmitter
     constructor: (socket, supportedRoles)->
 
