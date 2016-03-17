@@ -7,7 +7,6 @@ q        = require('q')
 _        = require('lodash')
 
 
-
 class Realm
     constructor: ()->
         @sessions = []
