@@ -24,7 +24,7 @@ github.io:
 	@echo "* CREATE DOCUMENTATION *"
 	@echo "* FOR GITHUB.IO        *"
 	@echo "************************"
-	@./node_modules/.bin/jsdoc --recurse --destination ../christian-raedel.github.io/nightlife-rabbit lib/*.js README.md
+	@./node_modules/.bin/jsdoc --recurse --destination ../Kryten0807.github.io/wampeter lib/*.js README.md
 
 clean:
 	@echo "************************"
