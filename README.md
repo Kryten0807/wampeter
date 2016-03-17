@@ -1,20 +1,36 @@
-[![Build Status](https://travis-ci.org/christian-raedel/nightlife-rabbit.svg?branch=master)](https://travis-ci.org/christian-raedel/nightlife-rabbit)
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/christian-raedel/nightlife-rabbit?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-#Nightlife-Rabbit#
+# Wampeter
+
+This is a rewrite of the [Nightlife-Rabbit](https://github.com/christian-raedel/nightlife-rabbit)
+project with two goals: first, to translate it into Coffeescript (because I
+prefer CS to plain old Javascript), and second, to implement some of the
+advanced WAMP features (specifically authentication, which I need for a project
+I'm working on).
+
+## What's with the name?
+
+The term *wampeter* comes from
+[Kurt Vonnegut](https://en.wikipedia.org/wiki/Kurt_Vonnegut)'s novel
+[*Cat's Cradle*](https://en.wikipedia.org/wiki/Cat%27s_Cradle). It is defined by
+the author as "an object around which the lives of many otherwise unrelated
+people may revolve."
+
+# Original README
+
+## Nightlife-Rabbit
 
 A [WAMP](http://wamp.ws)-Router implementation for [node.js](http://nodejs.org).
 At the moment, WAMP basic profile in the roles of dealer and broker are supported.
 For client connections: publish/subscribe and remote procedure register/call,
 [AutobahnJS](http://autobahn.ws/js) can be used.
 
-##Install##
+### Install
 
 ```
 npm install --save git+https://github.com/christian-raedel/nightlife-rabbit
 ```
 
-##Basic Usage##
+### Basic Usage
 
 ``` Javascript
 var http       = require('http')
@@ -53,6 +69,6 @@ client.onopen = function (session) {
 client.open();
 ```
 
-##Advanced Usage##
+### Advanced Usage
 
 Please see the examples directory of this repository.
