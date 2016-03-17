@@ -6,6 +6,12 @@ install:
 	@echo "************************"
 	@npm install --python=/usr/bin/python2.7
 
+build:
+	@echo "************************"
+	@echo "* BUILD LIBRARY         *"
+	@echo "************************"
+	@gulp
+
 test:
 	@echo "************************"
 	@echo "* TEST LIBRARY         *"
