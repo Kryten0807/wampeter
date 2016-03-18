@@ -47,6 +47,7 @@ describe('Router:Session', ()->
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
             url: 'ws://localhost:3000/wampeter'
+            # authmethods: ['cookie']
         })
 
         connection.onopen = (s)->
