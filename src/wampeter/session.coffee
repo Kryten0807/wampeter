@@ -121,6 +121,10 @@ class Session extends EventEmitter
                             })
                         ).done()
 
+                    else
+                        # we have an authenticator
+                        #
+
                 when 'GOODBYE'
                     @close(1009, 'wamp.error.close_normal')
 
