@@ -51,7 +51,7 @@ describe('Router:Session', ()->
 
             expect(method).to.equal('wampcra')
 
-            # respond to the challenge
+            # respond to the challenge - SIGN WITH THE INVALID KEY!
             #
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
