@@ -1,6 +1,8 @@
 deep = require('node-cconf').util.deep
 _ = require('lodash')
 
+
+
 class Message
     constructor: (data)->
         @obj =
@@ -48,15 +50,25 @@ TYPES =
 
     4  :
         type   : 'CHALLENGE',
-        encode : '[{{type}}, ]',
+        encode : '[{{type}}, {{authmethod|string}}, {{extra|dict}}]',
         decode : (data)->
-            throw new Error('Advanced profile is not implemented yet!')
+            return new Message(data).set('authmethod').set('extra').get()
+    # 4  :
+    #     type   : 'CHALLENGE',
+    #     encode : '[{{type}}, ]',
+    #     decode : (data)->
+    #         throw new Error('Advanced profile is not implemented yet!')
 
     5  :
         type   : 'AUTHENTICATE' ,
-        encode : '[{{type}}, ]',
+        encode : '[{{type}}, {{signature|string}}, {{extra|dict}}]',
         decode : (data)->
-            throw new Error('Advanced profile is not implemented yet!')
+            return new Message(data).set('signature').set('extra').get()
+    # 5  :
+    #     type   : 'AUTHENTICATE' ,
+    #     encode : '[{{type}}, ]',
+    #     decode : (data)->
+    #         throw new Error('Advanced profile is not implemented yet!')
 
     6  :
         type   : 'GOODBYE',

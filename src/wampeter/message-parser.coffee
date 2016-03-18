@@ -6,7 +6,7 @@ q      = require('q')
 _      = require('lodash')
 
 class MessageParser
-    constructor: (opts)->
+    constructor: (opts, @logger = null)->
         @config = new CConf(
             'message-parser',
             [
@@ -78,6 +78,14 @@ class MessageParser
                 return value
         )
 
+        engine.use('string', (value)=>
+            if _.isString(value)
+                value
+            else
+                throw new Error('wamp.error.invalid_argument')
+        )
+
+
         engine.onexpression = (value)->
             try
                 return JSON.stringify(value)
@@ -118,7 +126,7 @@ class MessageParser
 
             if _.isNumber(key) and _.isPlainObject(opts)
                 opts.type = key
-                return @template.render(@TYPES[key].encode, opts)
+                @template.render(@TYPES[key].encode, opts)
             else
                 throw new TypeError('wamp.error.invalid_message_type')
         )

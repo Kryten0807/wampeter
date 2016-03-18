@@ -38,4 +38,11 @@ clean:
 	-@rm -rf ./node_modules
 	-@rm -rf ./doc
 
+tidy:
+	@echo "***********************"
+	@echo "* CLEANUP BUILT FILES *"
+	@echo "***********************"
+	-@rm -rf ./lib/*
+	-@rm -rf ./test/*
+
 .PHONY: all install test docs

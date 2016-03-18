@@ -30,7 +30,7 @@ parser = null
 ###
 module.exports.parser = (opts)->
     if not parser? or not parser instanceof MessageParser
-        parser = new MessageParser(opts)
+        parser = new MessageParser(opts, logger)
 
     parser
 

@@ -43,6 +43,7 @@
     "node-cconf": "git+https://github.com/christian-raedel/node-cconf.git",
     "node-clogger": "git+https://github.com/christian-raedel/node-clogger.git",
     "q": "^1.0.1",
-    "ws": "^0.6.4"
+    "ws": "^0.6.4",
+    "crypto-js": "~3.1.6"
   }
 }

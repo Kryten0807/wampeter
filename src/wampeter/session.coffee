@@ -1,22 +1,27 @@
-util           = require('./util')
-logger       = util.logger()
-parser       = util.parser()
-randomid     = util.randomid
-inherits     = require('util').inherits
-EventEmitter = require('events').EventEmitter
-WebSocket    = require('ws')
-q            = require('q')
-_            = require('lodash')
-
+util          = require('./util')
+logger        = util.logger()
+parser        = util.parser()
+randomid      = util.randomid
+inherits      = require('util').inherits
+EventEmitter  = require('events').EventEmitter
+WebSocket     = require('ws')
+q             = require('q')
+_             = require('lodash')
+Authenticator = require('./authenticator')
 
 class Session extends EventEmitter
-    constructor: (socket, supportedRoles)->
+    constructor: (socket, supportedRoles, authConfig = null)->
 
         if not (socket instanceof WebSocket)
             throw new TypeError('wamp.error.invalid_socket')
 
         if not (_.isPlainObject(supportedRoles))
             throw new TypeError('wamp.error.invalid_roles')
+
+        # create the authenticator - this function will return null if no
+        # authenticator is require (ie. if `authConfig` is null)
+        #
+        @authenticator = Authenticator(@, authConfig)
 
         EventEmitter.call(@)
 
@@ -41,6 +46,8 @@ class Session extends EventEmitter
 
         @socket = socket
         @roles = supportedRoles
+
+
 
     send: (type, opts)=>
         parser.encode(type, opts)
@@ -84,27 +91,72 @@ class Session extends EventEmitter
             logger.debug('parsing message', message)
             switch message.type
                 when 'HELLO'
-                    q.fcall(()=>
-                        @id = randomid()
-                        @realm = message.realm
+                    # set an ID for the session
+                    #
+                    @id = randomid()
 
-                        defer = q.defer()
-                        @emit('attach', message.realm, defer)
-                        defer.promise
-                    ).then(()=>
+                    # do we have an authenticator? if not, then  process the
+                    # HELLO message without challenge/response; otherwise, issue
+                    # the CHALLENGE message and wait for a response
+                    #
+                    if not @authenticator?
+                        q.fcall(()=>
+                            @realm = message.realm
+
+                            defer = q.defer()
+                            @emit('attach', message.realm, defer)
+                            defer.promise
+                        ).then(()=>
+                            @send('WELCOME', {
+                                session:
+                                    id: @id
+                                details:
+                                    roles: @roles
+                            })
+                        ).then(()->
+                            logger.debug('attached session to realm', message.realm)
+                        ).catch((err)=>
+                            logger.error('cannot establish session', err.stack)
+                            @send('ABORT', {
+                                details:
+                                    message: 'Cannot establish session!'
+                                reason: err.message
+                            })
+                        ).done()
+
+                    else
+                        # send the CHALLENGE message
+                        #
+                        @authenticator.challenge(message).then((challengeMessage)=>
+                            logger.debug('sending CHALLENGE message', challengeMessage)
+                            @send('CHALLENGE', challengeMessage)
+                        ).catch((err)=>
+                            logger.error('cannot send CHALLENGE message', err)
+                            @send('ABORT', {
+                                details:
+                                    message: 'Cannot establish session!'
+                                reason: err.message
+                            })
+                        ).done()
+
+                when 'AUTHENTICATE'
+                    @authenticator?.authenticate(message).then((user)=>
+
+                        logger.debug('---authenticated!', user)
+
                         @send('WELCOME', {
                             session:
                                 id: @id
                             details:
                                 roles: @roles
                         })
-                    ).then(()->
-                        logger.debug('attached session to realm', message.realm)
+
+
                     ).catch((err)=>
-                        logger.error('cannot establish session', err.stack)
+                        logger.error('cannot authenticate', err)
                         @send('ABORT', {
                             details:
-                                message: 'Cannot establish session!'
+                                message: 'Cannot authenticate'
                             reason: err.message
                         })
                     ).done()
