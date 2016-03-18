@@ -1,6 +1,5 @@
 global.AUTOBAHN_DEBUG = true;
 
-###
 wampeter  = require('../lib/router')
 CLogger  = require('node-clogger')
 autobahn = require('autobahn')
@@ -235,4 +234,3 @@ describe('Router:Remote Procedures', ()->
         ).catch((err)-> done(new Error(err.stack))).done()
     )
 )
-###
