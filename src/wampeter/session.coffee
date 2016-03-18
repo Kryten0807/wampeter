@@ -91,13 +91,16 @@ class Session extends EventEmitter
             logger.debug('parsing message', message)
             switch message.type
                 when 'HELLO'
+                    # set an ID for the session
+                    #
+                    @id = randomid()
+
                     # do we have an authenticator? if not, then  process the
                     # HELLO message without challenge/response; otherwise, issue
                     # the CHALLENGE message and wait for a response
                     #
                     if not @authenticator?
                         q.fcall(()=>
-                            @id = randomid()
                             @realm = message.realm
 
                             defer = q.defer()
