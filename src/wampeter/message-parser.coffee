@@ -126,7 +126,7 @@ class MessageParser
 
             if _.isNumber(key) and _.isPlainObject(opts)
                 opts.type = key
-                return @template.render(@TYPES[key].encode, opts)
+                @template.render(@TYPES[key].encode, opts)
             else
                 throw new TypeError('wamp.error.invalid_message_type')
         )

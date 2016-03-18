@@ -1,6 +1,8 @@
 deep = require('node-cconf').util.deep
 _ = require('lodash')
 
+
+
 class Message
     constructor: (data)->
         @obj =
