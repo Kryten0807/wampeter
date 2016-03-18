@@ -18,6 +18,17 @@ class Authenticator
 
     constructor: (config)->
         logger.debug('instantiating authenticator', config)
+
+        # if config is null, then we have NO authentication. In this case, set
+        # up the authenticate method to always return true
+        #
+        if config==null
+            @authenticate = ()-> true
+            return
+
+        # now wander through the config structure & validate, finally saving the
+        # appropriate values if all goes well
+        #
         try
             # do we have a valid config?
             #
