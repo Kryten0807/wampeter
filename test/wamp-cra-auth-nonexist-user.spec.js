@@ -28,9 +28,9 @@
     router = null;
     connection = null;
     session = null;
-    VALID_AUTHID = 'j.smith';
+    VALID_AUTHID = 'nicolas.cage';
     VALID_KEY = 'abc123';
-    INVALID_AUTHID = 'd.hasselhoff';
+    INVALID_AUTHID = 'david.hasselhoff';
     INVALID_KEY = 'xyz789';
     before(function(done) {
       var obj;
