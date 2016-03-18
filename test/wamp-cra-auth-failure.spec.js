@@ -58,12 +58,12 @@
         return router.close().then(done)["catch"](done).done();
       });
     });
-    return it('should establish a new session via static wamp-cra authentication', function(done) {
+    return it('should fail to establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;
       router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
-        return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
+        return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
@@ -72,64 +72,12 @@
         authid: AUTHID,
         onchallenge: onchallenge
       });
-      connection.onopen = function(s) {
-        expect(s).to.be.an["instanceof"](autobahn.Session);
-        expect(s.isOpen).to.be["true"];
-        session = s;
+      connection.onclose = function(e) {
+        logger.error('closing', e);
         return done();
       };
       return connection.open();
     });
-
-    /*
-    it('should fail to establish a new session via static wamp-cra authentication', (done)->
-        router.createRealm('com.to.inge.world')
-    
-    
-        onchallenge = (session, method, extra)->
-    
-            expect(method).to.equal('wampcra')
-    
-             * respond to the challenge
-             *
-            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
-    
-        connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
-            url: 'ws://localhost:3000/wampeter'
-    
-            authmethods: ['wampcra']
-            authid: AUTHID
-            onchallenge: onchallenge
-        })
-    
-    
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
-             * done()
-    
-        connection.onerror = (err)->
-            expect(err.type).to.be('wamp.error.not_not_authorized')
-    
-            done()
-    
-        connection.open()
-    )
-     */
-
-    /*
-    it('should close a session', (done)->
-        expect(connection).to.be.an.instanceof(autobahn.Connection)
-    
-        connection.onclose = (reason)->
-            expect(reason).to.be.equal('closed')
-            done()
-    
-        connection.close()
-    )
-     */
   });
 
 }).call(this);
