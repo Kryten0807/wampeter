@@ -76,6 +76,44 @@ describe('Router:Session', ()->
         connection.open()
     )
 
+    it('should fail to establish a new session via static wamp-cra authentication', (done)->
+        router.createRealm('com.to.inge.world')
+
+        connection = new autobahn.Connection({
+            realm: 'com.to.inge.world'
+            url: 'ws://localhost:3000/wampeter'
+            authmethods: ['wampcra']
+        })
+
+
+        connection.onchallenge = (session, method, extra)->
+            expect(method).to.be('wampcra')
+
+            # respond to the challenge
+            #
+            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+
+
+        connection.onopen = (s)->
+            expect(s).to.be.an.instanceof(autobahn.Session)
+            expect(s.isOpen).to.be.true
+            session = s
+            # done()
+
+        connection.onerror = (err)->
+            expect(err.type).to.be('wamp.error.not_not_authorized')
+
+            done()
+
+
+
+
+
+
+
+        connection.open()
+    )
+
     it('should close a session', (done)->
         expect(connection).to.be.an.instanceof(autobahn.Connection)
 
