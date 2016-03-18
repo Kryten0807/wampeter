@@ -64,13 +64,13 @@
       router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
-        return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
+        return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
-        authid: VALID_AUTHID,
+        authid: INVALID_AUTHID,
         onchallenge: onchallenge
       });
       connection.onclose = function(e) {

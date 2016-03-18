@@ -51,16 +51,18 @@ describe('Router:Session', ()->
 
             expect(method).to.equal('wampcra')
 
-            # respond to the challenge
+            # respond to the challenge - CORRECT KEY, BUT WRONG USER!
             #
-            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
-            authid: VALID_AUTHID
+            # respond to the challenge - CORRECT KEY, BUT WRONG USER!
+            #
+            authid: INVALID_AUTHID
             onchallenge: onchallenge
         })
 
