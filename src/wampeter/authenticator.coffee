@@ -1,7 +1,8 @@
 _ = require('lodash')
 util          = require('./util')
 logger        = util.logger()
-
+crypto = require('crypto-js')
+q = require('q')
 
 ###*
  * An authenticator for auth requests to the router
