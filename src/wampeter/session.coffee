@@ -21,7 +21,7 @@ class Session extends EventEmitter
         # create the authenticator - this function will return null if no
         # authenticator is require (ie. if `authConfig` is null)
         #
-        @authenticator = Authenticator(authConfig)
+        @authenticator = Authenticator(@, authConfig)
 
         EventEmitter.call(@)
 
