@@ -36,9 +36,17 @@ describe('Router:Session', ()->
         setTimeout((()-> done()), 500)
     )
 
+    # after((done)->
+    #     setTimeout(()-> router.close().then(done).catch(done).done())
+    # )
+
     after((done)->
+        if connection? and connection.isOpen
+            connection.close()
+
         setTimeout(()-> router.close().then(done).catch(done).done())
     )
+
 
     it('should establish a new session via static wamp-cra authentication', (done)->
         router.createRealm('com.to.inge.world')
