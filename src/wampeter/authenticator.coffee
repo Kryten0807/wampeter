@@ -19,7 +19,7 @@ class Authenticator
 
     users = {}
 
-    constructor: (config)->
+    constructor: (@session, config)->
         logger.debug('instantiating authenticator', config)
 
         # if config is null, then we have NO authentication. In this case, set
