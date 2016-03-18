@@ -29,6 +29,10 @@ class Authenticator
             @authenticate = ()-> true
             return
 
+        # set up the challenge method
+        #
+        @challenge = @_wampcra_challenge
+
         # now wander through the config structure & validate, finally saving the
         # appropriate values if all goes well
         #
