@@ -6,7 +6,7 @@ q      = require('q')
 _      = require('lodash')
 
 class MessageParser
-    constructor: (opts)->
+    constructor: (opts, @logger = null)->
         @config = new CConf(
             'message-parser',
             [
