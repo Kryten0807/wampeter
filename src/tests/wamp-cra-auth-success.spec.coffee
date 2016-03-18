@@ -18,8 +18,10 @@ describe('Router:Session', ()->
     connection = null
     session = null
 
-    AUTHID = 'j.smith'
+    VALID_AUTHID = 'nicolas.cage'
     VALID_KEY = 'abc123'
+
+    INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
 
     before((done)->
@@ -29,7 +31,7 @@ describe('Router:Session', ()->
                 wampcra:
                     type: 'static'
                     users:
-                        "#{AUTHID}":
+                        "#{VALID_AUTHID}":
                             secret: VALID_KEY
                             role: 'frontend'
         })
@@ -57,7 +59,7 @@ describe('Router:Session', ()->
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
-            authid: AUTHID
+            authid: VALID_AUTHID
             onchallenge: onchallenge
         })
 
