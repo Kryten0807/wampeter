@@ -193,7 +193,7 @@ class Authenticator
                 @user.authid
             else
                 @user = null
-                throw new Error('WAMP-CRA signature is invalid')
+                throw new Error('wamp.error.not_not_authorized')
         )
 
     getUser: ()=> @user
