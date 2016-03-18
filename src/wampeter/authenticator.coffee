@@ -1,4 +1,6 @@
 _ = require('lodash')
+util          = require('./util')
+logger        = util.logger()
 
 
 ###*
