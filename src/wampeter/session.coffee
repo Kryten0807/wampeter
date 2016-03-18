@@ -1,13 +1,13 @@
-util           = require('./util')
-logger       = util.logger()
-parser       = util.parser()
-randomid     = util.randomid
-inherits     = require('util').inherits
-EventEmitter = require('events').EventEmitter
-WebSocket    = require('ws')
-q            = require('q')
-_            = require('lodash')
-
+util          = require('./util')
+logger        = util.logger()
+parser        = util.parser()
+randomid      = util.randomid
+inherits      = require('util').inherits
+EventEmitter  = require('events').EventEmitter
+WebSocket     = require('ws')
+q             = require('q')
+_             = require('lodash')
+Authenticator = require('./authenticator')
 
 class Session extends EventEmitter
     constructor: (socket, supportedRoles)->
