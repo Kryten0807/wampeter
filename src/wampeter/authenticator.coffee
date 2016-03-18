@@ -91,18 +91,6 @@ class Authenticator
             #
             @authenticate = ()-> false
 
-        ###
-        wampcra:
-            type: 'static'
-            users:
-                'alpha':
-                    secret: VALID_KEY
-                    role: 'frontend'
-        ###
-
-
-
-
 
     _wampcra_challenge: (message)=>
 
@@ -179,8 +167,6 @@ class Authenticator
             {authmethod: 'wampcra', extra: extra}
 
         )
-
-
 
     _wampcra_authenticate: (message)=>
         q.fcall(()=>
