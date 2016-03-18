@@ -141,6 +141,30 @@ class Session extends EventEmitter
 
 
 
+
+                when 'AUTHENTICATE'
+                    @authenticator?.authenticate(message).then((user)=>
+
+                        logger.debug('---authenticated!', user)
+
+                        @send('WELCOME', {
+                            session:
+                                id: @id
+                            details:
+                                roles: @roles
+                        })
+
+
+                    ).catch((err)=>
+                        logger.error('cannot authenticate', err)
+                        @send('ABORT', {
+                            details:
+                                message: 'Cannot authenticate'
+                            reason: err.message
+                        })
+                    ).done()
+
+
                 when 'GOODBYE'
                     @close(1009, 'wamp.error.close_normal')
 
