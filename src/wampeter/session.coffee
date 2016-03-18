@@ -139,9 +139,6 @@ class Session extends EventEmitter
                             })
                         ).done()
 
-
-
-
                 when 'AUTHENTICATE'
                     @authenticator?.authenticate(message).then((user)=>
 
@@ -163,7 +160,6 @@ class Session extends EventEmitter
                             reason: err.message
                         })
                     ).done()
-
 
                 when 'GOODBYE'
                     @close(1009, 'wamp.error.close_normal')
