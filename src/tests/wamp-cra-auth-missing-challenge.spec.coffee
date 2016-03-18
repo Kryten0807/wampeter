@@ -1,5 +1,6 @@
 global.AUTOBAHN_DEBUG = true;
 
+
 wampeter  = require('../lib/router')
 CLogger  = require('node-clogger')
 autobahn = require('autobahn')
@@ -43,16 +44,17 @@ describe('Router:Session', ()->
         setTimeout(()-> router.close().then(done).catch(done).done())
     )
 
-    it('should establish a new session via static wamp-cra authentication', (done)->
+    it('should fail to establish a new session via static wamp-cra authentication', (done)->
         router.createRealm('com.to.inge.world')
+
 
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
 
-            # respond to the challenge
+            # respond to the challenge - SIGN THE WRONG CHALLENGE!
             #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_KEY, {a:1, b:2})
 
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
@@ -63,12 +65,10 @@ describe('Router:Session', ()->
             onchallenge: onchallenge
         })
 
-
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
+        connection.onclose = (e)->
+            logger.error('closing', e)
             done()
+
 
         connection.open()
     )

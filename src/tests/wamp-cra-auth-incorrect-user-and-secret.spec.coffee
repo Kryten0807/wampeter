@@ -1,5 +1,6 @@
 global.AUTOBAHN_DEBUG = true;
 
+
 wampeter  = require('../lib/router')
 CLogger  = require('node-clogger')
 autobahn = require('autobahn')
@@ -18,8 +19,10 @@ describe('Router:Session', ()->
     connection = null
     session = null
 
-    AUTHID = 'j.smith'
+    VALID_AUTHID = 'nicolas.cage'
     VALID_KEY = 'abc123'
+
+    INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
 
     before((done)->
@@ -29,7 +32,7 @@ describe('Router:Session', ()->
                 wampcra:
                     type: 'static'
                     users:
-                        "#{AUTHID}":
+                        "#{VALID_AUTHID}":
                             secret: VALID_KEY
                             role: 'frontend'
         })
@@ -49,7 +52,7 @@ describe('Router:Session', ()->
 
             expect(method).to.equal('wampcra')
 
-            # respond to the challenge
+            # respond to the challenge - SIGN WITH THE INVALID KEY!
             #
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
@@ -58,7 +61,9 @@ describe('Router:Session', ()->
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
-            authid: AUTHID
+            # use the INVALID authid
+            #
+            authid: INVALID_AUTHID
             onchallenge: onchallenge
         })
 

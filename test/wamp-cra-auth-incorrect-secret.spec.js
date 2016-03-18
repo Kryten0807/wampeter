@@ -59,12 +59,12 @@
         return router.close().then(done)["catch"](done).done();
       });
     });
-    return it('should establish a new session via static wamp-cra authentication', function(done) {
+    return it('should fail to establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;
       router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
-        return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
+        return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
@@ -73,10 +73,8 @@
         authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onopen = function(s) {
-        expect(s).to.be.an["instanceof"](autobahn.Session);
-        expect(s.isOpen).to.be["true"];
-        session = s;
+      connection.onclose = function(e) {
+        logger.error('closing', e);
         return done();
       };
       return connection.open();

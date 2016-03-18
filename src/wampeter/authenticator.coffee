@@ -133,7 +133,8 @@ class Authenticator
             #
             @user = @users[userID]
             if not @user?
-                throw new Error("user not found '#{userID}'")
+                @user = null
+                throw new Error('wamp.error.not_not_authorized')
 
             @user.authid = userID
 

@@ -24,12 +24,13 @@
   chai.use(spies).use(promised);
 
   describe('Router:Session', function() {
-    var AUTHID, INVALID_KEY, VALID_KEY, connection, router, session;
+    var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
     router = null;
     connection = null;
     session = null;
-    AUTHID = 'j.smith';
+    VALID_AUTHID = 'nicolas.cage';
     VALID_KEY = 'abc123';
+    INVALID_AUTHID = 'david.hasselhoff';
     INVALID_KEY = 'xyz789';
     before(function(done) {
       var obj;
@@ -40,7 +41,7 @@
             type: 'static',
             users: (
               obj = {},
-              obj["" + AUTHID] = {
+              obj["" + VALID_AUTHID] = {
                 secret: VALID_KEY,
                 role: 'frontend'
               },
@@ -63,13 +64,16 @@
       router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
-        return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
+        return autobahn.auth_cra.sign(VALID_KEY, {
+          a: 1,
+          b: 2
+        });
       };
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
-        authid: AUTHID,
+        authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
       connection.onclose = function(e) {
