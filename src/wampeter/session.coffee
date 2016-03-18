@@ -18,9 +18,10 @@ class Session extends EventEmitter
         if not (_.isPlainObject(supportedRoles))
             throw new TypeError('wamp.error.invalid_roles')
 
-        # create the authenticator
+        # create the authenticator - this function will return null if no
+        # authenticator is require (ie. if `authConfig` is null)
         #
-        @authenticator = new Authenticator(authConfig)
+        @authenticator = Authenticator(authConfig)
 
         EventEmitter.call(@)
 
