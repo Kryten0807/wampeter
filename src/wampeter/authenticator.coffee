@@ -76,7 +76,7 @@ class Authenticator
             @authenticate = @_wampcra_authenticate
 
         catch err
-            # log the error
+            # the config failed validation somewhere. Log the error
             #
             logger.error("unable to define authenticator: #{err} - falling back to impossible authentication")
 
