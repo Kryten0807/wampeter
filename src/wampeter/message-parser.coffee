@@ -78,6 +78,14 @@ class MessageParser
                 return value
         )
 
+        engine.use('string', (value)=>
+            if _.isString(value)
+                value
+            else
+                throw new Error('wamp.error.invalid_argument')
+        )
+
+
         engine.onexpression = (value)->
             try
                 return JSON.stringify(value)
