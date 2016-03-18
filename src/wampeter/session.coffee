@@ -91,30 +91,34 @@ class Session extends EventEmitter
             logger.debug('parsing message', message)
             switch message.type
                 when 'HELLO'
-                    q.fcall(()=>
-                        @id = randomid()
-                        @realm = message.realm
+                    # do we have an authenticator? if not, then  process the
+                    # HELLO message without challenge/response
+                    #
+                    if not @authenticator?
+                        q.fcall(()=>
+                            @id = randomid()
+                            @realm = message.realm
 
-                        defer = q.defer()
-                        @emit('attach', message.realm, defer)
-                        defer.promise
-                    ).then(()=>
-                        @send('WELCOME', {
-                            session:
-                                id: @id
-                            details:
-                                roles: @roles
-                        })
-                    ).then(()->
-                        logger.debug('attached session to realm', message.realm)
-                    ).catch((err)=>
-                        logger.error('cannot establish session', err.stack)
-                        @send('ABORT', {
-                            details:
-                                message: 'Cannot establish session!'
-                            reason: err.message
-                        })
-                    ).done()
+                            defer = q.defer()
+                            @emit('attach', message.realm, defer)
+                            defer.promise
+                        ).then(()=>
+                            @send('WELCOME', {
+                                session:
+                                    id: @id
+                                details:
+                                    roles: @roles
+                            })
+                        ).then(()->
+                            logger.debug('attached session to realm', message.realm)
+                        ).catch((err)=>
+                            logger.error('cannot establish session', err.stack)
+                            @send('ABORT', {
+                                details:
+                                    message: 'Cannot establish session!'
+                                reason: err.message
+                            })
+                        ).done()
 
                 when 'GOODBYE'
                     @close(1009, 'wamp.error.close_normal')
