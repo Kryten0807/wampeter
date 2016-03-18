@@ -92,7 +92,8 @@ class Session extends EventEmitter
             switch message.type
                 when 'HELLO'
                     # do we have an authenticator? if not, then  process the
-                    # HELLO message without challenge/response
+                    # HELLO message without challenge/response; otherwise, issue
+                    # the CHALLENGE message and wait for a response
                     #
                     if not @authenticator?
                         q.fcall(()=>
