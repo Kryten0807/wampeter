@@ -46,6 +46,8 @@ class Session extends EventEmitter
         @socket = socket
         @roles = supportedRoles
 
+
+
     send: (type, opts)=>
         parser.encode(type, opts)
         .then((message)=>
