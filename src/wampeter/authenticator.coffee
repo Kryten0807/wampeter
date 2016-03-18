@@ -105,4 +105,6 @@ class Authenticator
 
 
 
-module.exports = (config)-> if config==null then null else new Authenticator(config)
+module.exports = (session, authConfig)->
+    logger.debug('in authenticator factory', authConfig)
+    if authConfig==null then null else new Authenticator(session, authConfig)
