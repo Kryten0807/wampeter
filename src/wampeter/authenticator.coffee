@@ -181,6 +181,22 @@ class Authenticator
 
         )
 
+
+
+    _wampcra_authenticate: (message)=>
+        q.fcall(()=>
+            logger.debug('authenticating', message)
+
+            logger.debug('----- auth sig', message.signature)
+            logger.debug('----- auth should be', @signature)
+
+            if message.signature? and message.signature==@signature
+                @user.authid
+            else
+                @user = null
+                throw new Error('WAMP-CRA signature is invalid')
+        )
+
 module.exports = (session, authConfig)->
     logger.debug('in authenticator factory', authConfig)
     if authConfig==null then null else new Authenticator(session, authConfig)
