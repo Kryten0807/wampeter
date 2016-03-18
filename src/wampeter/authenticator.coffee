@@ -100,7 +100,6 @@ class Authenticator
                     role: 'frontend'
         ###
 
-    _wampcra_authenticate: (user, secret)=>
 
 
 
