@@ -10,7 +10,7 @@ _             = require('lodash')
 Authenticator = require('./authenticator')
 
 class Session extends EventEmitter
-    constructor: (socket, supportedRoles, authConfig = {})->
+    constructor: (socket, supportedRoles, authConfig = null)->
 
         if not (socket instanceof WebSocket)
             throw new TypeError('wamp.error.invalid_socket')
