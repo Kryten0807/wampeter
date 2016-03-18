@@ -24,12 +24,13 @@
   chai.use(spies).use(promised);
 
   describe('Router:Session', function() {
-    var AUTHID, INVALID_KEY, VALID_KEY, connection, router, session;
+    var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
     router = null;
     connection = null;
     session = null;
-    AUTHID = 'j.smith';
+    VALID_AUTHID = 'j.smith';
     VALID_KEY = 'abc123';
+    INVALID_AUTHID = 'd.hasselhoff';
     INVALID_KEY = 'xyz789';
     before(function(done) {
       var obj;
@@ -40,7 +41,7 @@
             type: 'static',
             users: (
               obj = {},
-              obj["" + AUTHID] = {
+              obj["" + VALID_AUTHID] = {
                 secret: VALID_KEY,
                 role: 'frontend'
               },
@@ -69,7 +70,7 @@
         realm: 'com.to.inge.world',
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
-        authid: AUTHID,
+        authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
       connection.onclose = function(e) {
