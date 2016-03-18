@@ -96,3 +96,8 @@ class Authenticator
         ###
 
     _wampcra_authenticate: (user, secret)=>
+
+
+
+
+module.exports = (config)-> if config==null then null else new Authenticator(config)
