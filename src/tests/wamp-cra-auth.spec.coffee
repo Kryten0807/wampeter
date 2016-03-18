@@ -60,12 +60,20 @@ describe('Router:Session', ()->
 
         connection.onchallenge = (session, method, extra)->
             expect(method).to.be('wampcra')
-            done()
 
             # respond to the challenge
             #
             autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
+            # this is here temporarily (I think). Ideally, if WAMPCRA were
+            # implemented, then the call sequence ought to be:
+            #
+            #       open -> onChallenge -> onOpen -> done
+            #
+            # But since I'm just sketching out the steps here, I want it to fail
+            # at this point.
+            #
+            done()
 
         connection.onopen = (s)->
             expect(s).to.be.an.instanceof(autobahn.Session)
