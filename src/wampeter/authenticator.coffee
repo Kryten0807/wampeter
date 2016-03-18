@@ -105,6 +105,82 @@ class Authenticator
 
 
 
+    _wampcra_challenge: (message)=>
+
+        @user = null
+
+        derive_key = (secret, salt, iterations, keylen)->
+            if not salt?
+                return secret
+
+            logger.debug('deriving key')
+            iterations ?= 1000
+
+            keylen ?= 32
+
+
+            config =
+                keySize: keylen / 4
+                iterations: iterations
+                hasher: crypto.algo.SHA256
+
+            logger.debug('key config', config)
+
+            key = crypto.PBKDF2(secret, salt, config)
+            key.toString(crypto.enc.Base64)
+
+        sign = (key, challenge)->
+            crypto.HmacSHA256(challenge, key).toString(crypto.enc.Base64)
+
+
+        q.fcall(()=>
+
+            # get the details from the message
+            #
+            userID = message.details.authid
+
+            if not userID?
+                throw new Error('no user provided')
+
+            # find the user
+            #
+            @user = @users[userID]
+            if not @user?
+                throw new Error("user not found '#{userID}'")
+
+            @user.authid = userID
+
+            challenge = JSON.stringify({
+                authid: @user.authid
+                authrole: @user.role
+                authmethod: 'wampcra'
+                authprovider: 'static'
+                session: @session.id
+                nonce: util.randomid()
+                timestamp: Math.floor(Date.now()/1000)
+            })
+
+            extra =
+                challenge: challenge
+
+            if @user.salt?
+                extra.salt = @user.salt
+                extra.iterations = @user.iterations ? 1000
+                extra.keylen = @user.keylen ? 32
+
+            logger.debug('getting key')
+
+            key = derive_key(@user.secret, @user.salt, @user.iterations, @user.keylen)
+            logger.debug('key', key)
+
+            @signature = sign(key, challenge)
+
+            logger.debug('signature', @signature, @user)
+
+            {authmethod: 'wampcra', extra: extra}
+
+        )
+
 module.exports = (session, authConfig)->
     logger.debug('in authenticator factory', authConfig)
     if authConfig==null then null else new Authenticator(session, authConfig)
