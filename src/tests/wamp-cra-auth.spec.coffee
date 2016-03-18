@@ -18,6 +18,7 @@ describe('Router:Session', ()->
     connection = null
     session = null
 
+    AUTHID = 'j.smith'
     VALID_KEY = 'abc123'
     INVALID_KEY = 'xyz789'
 
@@ -28,7 +29,7 @@ describe('Router:Session', ()->
                 wampcra:
                     type: 'static'
                     users:
-                        'alpha':
+                        "#{AUTHID}":
                             secret: VALID_KEY
                             role: 'frontend'
         })
@@ -36,70 +37,61 @@ describe('Router:Session', ()->
         setTimeout((()-> done()), 500)
     )
 
-    # after((done)->
-    #     setTimeout(()-> router.close().then(done).catch(done).done())
-    # )
-
     after((done)->
-        if connection? and connection.isOpen
-            connection.close()
-
         setTimeout(()-> router.close().then(done).catch(done).done())
     )
-
 
     it('should establish a new session via static wamp-cra authentication', (done)->
         router.createRealm('com.to.inge.world')
 
-        connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
-            url: 'ws://localhost:3000/wampeter'
-            authmethods: ['wampcra']
-        })
+        onchallenge = (session, method, extra)->
 
-
-        connection.onchallenge = (session, method, extra)->
-            expect(method).to.be('wampcra')
+            expect(method).to.equal('wampcra')
 
             # respond to the challenge
             #
             autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
-            # this is here temporarily (I think). Ideally, if WAMPCRA were
-            # implemented, then the call sequence ought to be:
-            #
-            #       open -> onChallenge -> onOpen -> done
-            #
-            # But since I'm just sketching out the steps here, I want it to fail
-            # at this point.
-            #
-            done()
+        connection = new autobahn.Connection({
+            realm: 'com.to.inge.world'
+            url: 'ws://localhost:3000/wampeter'
+
+            authmethods: ['wampcra']
+            authid: AUTHID
+            onchallenge: onchallenge
+        })
+
 
         connection.onopen = (s)->
             expect(s).to.be.an.instanceof(autobahn.Session)
             expect(s.isOpen).to.be.true
             session = s
-            # done()
+            done()
 
         connection.open()
     )
 
+    ###
     it('should fail to establish a new session via static wamp-cra authentication', (done)->
         router.createRealm('com.to.inge.world')
 
-        connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
-            url: 'ws://localhost:3000/wampeter'
-            authmethods: ['wampcra']
-        })
 
+        onchallenge = (session, method, extra)->
 
-        connection.onchallenge = (session, method, extra)->
-            expect(method).to.be('wampcra')
+            expect(method).to.equal('wampcra')
 
             # respond to the challenge
             #
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+
+        connection = new autobahn.Connection({
+            realm: 'com.to.inge.world'
+            url: 'ws://localhost:3000/wampeter'
+
+            authmethods: ['wampcra']
+            authid: AUTHID
+            onchallenge: onchallenge
+        })
 
 
         connection.onopen = (s)->
@@ -113,15 +105,11 @@ describe('Router:Session', ()->
 
             done()
 
-
-
-
-
-
-
         connection.open()
     )
+    ###
 
+    ###
     it('should close a session', (done)->
         expect(connection).to.be.an.instanceof(autobahn.Connection)
 
@@ -131,4 +119,5 @@ describe('Router:Session', ()->
 
         connection.close()
     )
+    ###
 )
