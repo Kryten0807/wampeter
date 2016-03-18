@@ -125,8 +125,21 @@ class Session extends EventEmitter
                         ).done()
 
                     else
-                        # we have an authenticator
+                        # send the CHALLENGE message
                         #
+                        @authenticator.challenge(message).then((challengeMessage)=>
+                            logger.debug('sending CHALLENGE message', challengeMessage)
+                            @send('CHALLENGE', challengeMessage)
+                        ).catch((err)=>
+                            logger.error('cannot send CHALLENGE message', err)
+                            @send('ABORT', {
+                                details:
+                                    message: 'Cannot establish session!'
+                                reason: err.message
+                            })
+                        ).done()
+
+
 
                 when 'GOODBYE'
                     @close(1009, 'wamp.error.close_normal')
