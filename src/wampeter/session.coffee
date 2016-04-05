@@ -141,17 +141,12 @@ class Session extends EventEmitter
 
                 when 'AUTHENTICATE'
                     @authenticator?.authenticate(message).then((user)=>
-
-                        logger.debug('---authenticated!', user)
-
                         @send('WELCOME', {
                             session:
                                 id: @id
                             details:
                                 roles: @roles
                         })
-
-
                     ).catch((err)=>
                         logger.error('cannot authenticate', err)
                         @send('ABORT', {
