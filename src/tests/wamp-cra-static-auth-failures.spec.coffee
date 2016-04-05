@@ -14,7 +14,7 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
-describe('Router:Session', ()->
+describe('Router:Static WAMP-CRA', ()->
 
     router = null
     connection = null
