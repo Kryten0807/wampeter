@@ -49,7 +49,7 @@ class Authenticator
 
             # is the type static? if so, then carry on
             #
-            if config.wampcra.type!='static'
+            if config.wampcra.type!='static' and config.wampcra.type!='dynamic'
                 throw 'non-static wampcra config'
 
             # do we have a list of users?
