@@ -38,12 +38,6 @@ ROUTER_CONFIG =
         wampcra:
             type: 'dynamic'
             authenticator: authenticator
-        # wampcra:
-        #     type: 'static'
-        #     users:
-        #         "#{VALID_AUTHID}":
-        #             secret: VALID_KEY
-        #             role: 'frontend'
 
 
 describe('Router:Dynamic WAMP-CRA Successes', ()->
