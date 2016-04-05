@@ -1,5 +1,5 @@
 (function() {
-  var CLEANUP_DELAY, CLogger, D, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, REALM_URI, ROUTER_CONFIG, VALID_AUTHID, VALID_KEY, authenticator, autobahn, chai, expect, logger, obj, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -27,35 +27,53 @@
 
   CLEANUP_DELAY = 500;
 
+  BASE_URI = 'com.to.inge';
+
+  REALM_URI = BASE_URI + '.world';
+
+  VALID_AUTHID = 'nicolas.cage';
+
+  VALID_KEY = 'abc123';
+
+  INVALID_AUTHID = 'david.hasselhoff';
+
+  INVALID_KEY = 'xyz789';
+
+  authenticator = function(realm, authid, details) {
+    expect(realm).to.be.equal(REALM_URI);
+    return {
+      secret: VALID_KEY,
+      role: 'frontend'
+    };
+  };
+
+  ROUTER_CONFIG = {
+    port: 3000,
+    auth: {
+      wampcra: {
+        type: 'static',
+        users: (
+          obj = {},
+          obj["" + VALID_AUTHID] = {
+            secret: VALID_KEY,
+            role: 'frontend'
+          },
+          obj
+        )
+      }
+    }
+  };
+
   describe('Router:Static WAMP-CRA Successes', function() {
-    var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
+    var connection, router, session;
     router = null;
     connection = null;
     session = null;
-    VALID_AUTHID = 'nicolas.cage';
-    VALID_KEY = 'abc123';
-    INVALID_AUTHID = 'david.hasselhoff';
-    INVALID_KEY = 'xyz789';
     before(function(done_func) {
-      var done, obj;
+      var done;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000,
-        auth: {
-          wampcra: {
-            type: 'static',
-            users: (
-              obj = {},
-              obj["" + VALID_AUTHID] = {
-                secret: VALID_KEY,
-                role: 'frontend'
-              },
-              obj
-            )
-          }
-        }
-      });
-      router.createRealm('com.to.inge.world');
+      router = wampeter.createRouter(ROUTER_CONFIG);
+      router.createRealm(REALM_URI);
       return setTimeout(done, CLEANUP_DELAY);
     });
     after(function(done_func) {
@@ -91,35 +109,15 @@
   });
 
   describe('Router:Static WAMP-CRA Failures', function() {
-    var INVALID_AUTHID, INVALID_KEY, REALM, VALID_AUTHID, VALID_KEY, connection, router, session;
+    var connection, router, session;
     router = null;
     connection = null;
     session = null;
-    VALID_AUTHID = 'nicolas.cage';
-    VALID_KEY = 'abc123';
-    INVALID_AUTHID = 'david.hasselhoff';
-    INVALID_KEY = 'xyz789';
-    REALM = 'com.to.inge.world';
     before(function(done_func) {
-      var done, obj;
+      var done;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000,
-        auth: {
-          wampcra: {
-            type: 'static',
-            users: (
-              obj = {},
-              obj["" + VALID_AUTHID] = {
-                secret: VALID_KEY,
-                role: 'frontend'
-              },
-              obj
-            )
-          }
-        }
-      });
-      router.createRealm(REALM);
+      router = wampeter.createRouter(ROUTER_CONFIG);
+      router.createRealm(REALM_URI);
       return setTimeout((function() {
         return done();
       }), CLEANUP_DELAY);
@@ -139,7 +137,7 @@
         return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
-        realm: REALM,
+        realm: REALM_URI,
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
         authid: VALID_AUTHID,
@@ -161,7 +159,7 @@
         return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
-        realm: REALM,
+        realm: REALM_URI,
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
         authid: INVALID_AUTHID,
@@ -186,7 +184,7 @@
         });
       };
       connection = new autobahn.Connection({
-        realm: REALM,
+        realm: REALM_URI,
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
         authid: VALID_AUTHID,
@@ -208,7 +206,7 @@
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
-        realm: REALM,
+        realm: REALM_URI,
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
         authid: INVALID_AUTHID,
