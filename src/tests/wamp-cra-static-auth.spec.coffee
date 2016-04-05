@@ -8,13 +8,86 @@ expect   = chai.expect
 promised = require('chai-as-promised')
 spies    = require('chai-spies')
 
+D = require('./done')
+
 logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
-describe('Router:Session', ()->
+describe('Router:Static WAMP-CRA Successes', ()->
+
+    router = null
+    connection = null
+    session = null
+
+    VALID_AUTHID = 'nicolas.cage'
+    VALID_KEY = 'abc123'
+
+    INVALID_AUTHID = 'david.hasselhoff'
+    INVALID_KEY = 'xyz789'
+
+    before((done_func)->
+        done = D(done_func)
+
+        router = wampeter.createRouter({
+            port: 3000
+            auth:
+                wampcra:
+                    type: 'static'
+                    users:
+                        "#{VALID_AUTHID}":
+                            secret: VALID_KEY
+                            role: 'frontend'
+        })
+
+        router.createRealm('com.to.inge.world')
+
+        setTimeout(done, CLEANUP_DELAY)
+    )
+
+    after((done_func)->
+        done = D(done_func)
+
+        cleanup = ()-> router.close().then(done).catch(done).done()
+        setTimeout(cleanup, CLEANUP_DELAY)
+    )
+
+    it('should establish a new session via static wamp-cra authentication', (done_func)->
+        done = D(done_func)
+
+        onchallenge = (session, method, extra)->
+
+            expect(method).to.equal('wampcra')
+
+            # respond to the challenge
+            #
+            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
+
+        connection = new autobahn.Connection({
+            realm: 'com.to.inge.world'
+            url: 'ws://localhost:3000/wampeter'
+
+            authmethods: ['wampcra']
+            authid: VALID_AUTHID
+            onchallenge: onchallenge
+        })
+
+
+        connection.onopen = (s)->
+            expect(s).to.be.an.instanceof(autobahn.Session)
+            expect(s.isOpen).to.be.true
+            session = s
+            done()
+
+        connection.open()
+    )
+)
+
+
+
+describe('Router:Static WAMP-CRA Failures', ()->
 
     router = null
     connection = null
@@ -28,7 +101,9 @@ describe('Router:Session', ()->
 
     REALM = 'com.to.inge.world'
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({
             port: 3000
             auth:
@@ -45,11 +120,14 @@ describe('Router:Session', ()->
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
-    it('should fail to establish a new session - invalid key', (done)->
+    it('should fail to establish a new session - invalid key', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -68,8 +146,12 @@ describe('Router:Session', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
         connection.open()
@@ -78,7 +160,8 @@ describe('Router:Session', ()->
 
 
 
-    it('should fail to establish a new session - invalid auth ID & secret', (done)->
+    it('should fail to establish a new session - invalid auth ID & secret', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -99,8 +182,12 @@ describe('Router:Session', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
         connection.open()
@@ -110,7 +197,8 @@ describe('Router:Session', ()->
 
 
 
-    it('should fail to establish a new session - invalid challenge', (done)->
+    it('should fail to establish a new session - invalid challenge', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -129,8 +217,12 @@ describe('Router:Session', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
 
@@ -140,7 +232,9 @@ describe('Router:Session', ()->
 
 
 
-    it('should fail to establish a new session - invalid auth ID', (done)->
+    it('should fail to establish a new session - invalid auth ID', (done_func)->
+        done = D(done_func)
+
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
@@ -160,8 +254,12 @@ describe('Router:Session', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
         connection.open()
