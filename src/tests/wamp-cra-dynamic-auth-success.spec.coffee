@@ -14,7 +14,7 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
-describe('Router:Session', ()->
+describe('Router:Dynamic WAMP-CRA Success', ()->
 
     router = null
     connection = null
@@ -35,10 +35,7 @@ describe('Router:Session', ()->
         expect(realm).to.be.equal(REALM_URI)
         expect(authid).to.be.equal(VALID_AUTHID)
 
-        {
-            secret: VALID_KEY
-            role: 'frontend'
-        }
+        { secret: VALID_KEY, role: 'frontend' }
 
 
 
