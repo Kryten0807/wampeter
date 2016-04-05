@@ -115,7 +115,37 @@ class Authenticator
                 if not config.wampcra.authenticator? or not _.isFunction(config.wampcra.authenticator)
                     throw 'missing/invalid wamp-cra authenticator function'
 
-                throw 'dynamic wamp-cra not implemented yet'
+                # set up the challenge generator method
+                #
+                @generateChallenge = (message)=>
+                    logger.debug("----------------- generate challenge", message)
+
+                    realm = message?.realm
+                    authid = message?.details?.authid
+                    details = message?.details
+
+                    # find the user
+                    #
+                    credentials = config.wampcra.authenticator(realm, authid, details)
+
+                    if not credentials?
+                        credentials = null
+                        throw new Error('wamp.error.not_not_authorized')
+
+                    credentials.authid = authid
+
+                    challenge = JSON.stringify({
+                        authid: authid
+                        authrole: credentials.role
+                        authmethod: 'wampcra'
+                        authprovider: 'dynamic'
+                        session: @session.id
+                        nonce: util.randomid()
+                        timestamp: Math.floor(Date.now()/1000)
+                    })
+
+                    [challenge, credentials]
+
             else
                 # is the type static? if so, then carry on
                 #
