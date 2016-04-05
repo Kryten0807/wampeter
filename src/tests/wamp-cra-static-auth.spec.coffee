@@ -16,33 +16,45 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
+
+
+BASE_URI = 'com.to.inge'
+REALM_URI = BASE_URI + '.world'
+
+VALID_AUTHID = 'nicolas.cage'
+VALID_KEY = 'abc123'
+
+INVALID_AUTHID = 'david.hasselhoff'
+INVALID_KEY = 'xyz789'
+
+
+authenticator = (realm, authid, details)->
+    expect(realm).to.be.equal(REALM_URI)
+
+    { secret: VALID_KEY, role: 'frontend' }
+
+ROUTER_CONFIG =
+    port: 3000
+    auth:
+        wampcra:
+            type: 'static'
+            users:
+                "#{VALID_AUTHID}":
+                    secret: VALID_KEY
+                    role: 'frontend'
+
 describe('Router:Static WAMP-CRA Successes', ()->
 
     router = null
     connection = null
     session = null
 
-    VALID_AUTHID = 'nicolas.cage'
-    VALID_KEY = 'abc123'
-
-    INVALID_AUTHID = 'david.hasselhoff'
-    INVALID_KEY = 'xyz789'
-
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({
-            port: 3000
-            auth:
-                wampcra:
-                    type: 'static'
-                    users:
-                        "#{VALID_AUTHID}":
-                            secret: VALID_KEY
-                            role: 'frontend'
-        })
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
-        router.createRealm('com.to.inge.world')
+        router.createRealm(REALM_URI)
 
         setTimeout(done, CLEANUP_DELAY)
     )
@@ -93,29 +105,12 @@ describe('Router:Static WAMP-CRA Failures', ()->
     connection = null
     session = null
 
-    VALID_AUTHID = 'nicolas.cage'
-    VALID_KEY = 'abc123'
-
-    INVALID_AUTHID = 'david.hasselhoff'
-    INVALID_KEY = 'xyz789'
-
-    REALM = 'com.to.inge.world'
-
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({
-            port: 3000
-            auth:
-                wampcra:
-                    type: 'static'
-                    users:
-                        "#{VALID_AUTHID}":
-                            secret: VALID_KEY
-                            role: 'frontend'
-        })
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
-        router.createRealm(REALM)
+        router.createRealm(REALM_URI)
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
@@ -138,7 +133,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: REALM
+            realm: REALM_URI
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -172,7 +167,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: REALM
+            realm: REALM_URI
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -209,7 +204,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
             autobahn.auth_cra.sign(VALID_KEY, {a:1, b:2})
 
         connection = new autobahn.Connection({
-            realm: REALM
+            realm: REALM_URI
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -244,7 +239,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
             autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: REALM
+            realm: REALM_URI
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
