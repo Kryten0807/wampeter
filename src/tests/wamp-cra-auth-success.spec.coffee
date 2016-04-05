@@ -38,6 +38,8 @@ describe('Router:Session', ()->
                             role: 'frontend'
         })
 
+        router.createRealm('com.to.inge.world')
+
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
@@ -46,8 +48,6 @@ describe('Router:Session', ()->
     )
 
     it('should establish a new session via static wamp-cra authentication', (done)->
-        router.createRealm('com.to.inge.world')
-
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
