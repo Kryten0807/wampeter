@@ -1,5 +1,5 @@
 (function() {
-  var CLEANUP_DELAY, CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, D, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -16,6 +16,8 @@
   promised = require('chai-as-promised');
 
   spies = require('chai-spies');
+
+  D = require('./done');
 
   logger = new CLogger({
     name: 'router-tests'
@@ -34,8 +36,9 @@
     VALID_KEY = 'abc123';
     INVALID_AUTHID = 'david.hasselhoff';
     INVALID_KEY = 'xyz789';
-    before(function(done) {
-      var obj;
+    before(function(done_func) {
+      var done, obj;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000,
         auth: {
@@ -55,15 +58,17 @@
       router.createRealm('com.to.inge.world');
       return setTimeout(done, CLEANUP_DELAY);
     });
-    after(function(done) {
-      var cleanup;
+    after(function(done_func) {
+      var cleanup, done;
+      done = D(done_func);
       cleanup = function() {
         return router.close().then(done)["catch"](done).done();
       };
       return setTimeout(cleanup, CLEANUP_DELAY);
     });
-    return it('should establish a new session via static wamp-cra authentication', function(done) {
-      var onchallenge;
+    return it('should establish a new session via static wamp-cra authentication', function(done_func) {
+      var done, onchallenge;
+      done = D(done_func);
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
@@ -95,8 +100,9 @@
     INVALID_AUTHID = 'david.hasselhoff';
     INVALID_KEY = 'xyz789';
     REALM = 'com.to.inge.world';
-    before(function(done) {
-      var obj;
+    before(function(done_func) {
+      var done, obj;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000,
         auth: {
@@ -118,13 +124,16 @@
         return done();
       }), CLEANUP_DELAY);
     });
-    after(function(done) {
+    after(function(done_func) {
+      var done;
+      done = D(done_func);
       return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
       }), CLEANUP_DELAY);
     });
-    it('should fail to establish a new session - invalid key', function(done) {
-      var onchallenge;
+    it('should fail to establish a new session - invalid key', function(done_func) {
+      var done, onchallenge;
+      done = D(done_func);
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
@@ -142,8 +151,9 @@
       };
       return connection.open();
     });
-    it('should fail to establish a new session - invalid auth ID & secret', function(done) {
-      var onchallenge;
+    it('should fail to establish a new session - invalid auth ID & secret', function(done_func) {
+      var done, onchallenge;
+      done = D(done_func);
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(INVALID_KEY, extra.challenge);
@@ -161,8 +171,9 @@
       };
       return connection.open();
     });
-    it('should fail to establish a new session - invalid challenge', function(done) {
-      var onchallenge;
+    it('should fail to establish a new session - invalid challenge', function(done_func) {
+      var done, onchallenge;
+      done = D(done_func);
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, {
@@ -183,8 +194,9 @@
       };
       return connection.open();
     });
-    return it('should fail to establish a new session - invalid auth ID', function(done) {
-      var onchallenge;
+    return it('should fail to establish a new session - invalid auth ID', function(done_func) {
+      var done, onchallenge;
+      done = D(done_func);
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);

@@ -1,5 +1,5 @@
 (function() {
-  var CLEANUP_DELAY, CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, D, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -17,6 +17,8 @@
 
   spies = require('chai-spies');
 
+  D = require('./done');
+
   logger = new CLogger({
     name: 'router-tests'
   });
@@ -26,8 +28,9 @@
   CLEANUP_DELAY = 500;
 
   describe('Router#constructor', function() {
-    return it('should instantiate', function(done) {
-      var router;
+    return it('should instantiate', function(done_func) {
+      var done, router;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000
       });
@@ -43,7 +46,9 @@
     router = null;
     connection = null;
     session = null;
-    before(function(done) {
+    before(function(done_func) {
+      var done;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000
       });
@@ -51,12 +56,16 @@
         return done();
       }), CLEANUP_DELAY);
     });
-    after(function(done) {
+    after(function(done_func) {
+      var done;
+      done = D(done_func);
       return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
       }), CLEANUP_DELAY);
     });
-    it('should establish a new session', function(done) {
+    it('should establish a new session', function(done_func) {
+      var done;
+      done = D(done_func);
       router.createRealm('com.to.inge.world');
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
@@ -70,7 +79,9 @@
       };
       return connection.open();
     });
-    return it('should close a session', function(done) {
+    return it('should close a session', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(connection).to.be.an["instanceof"](autobahn.Connection);
       connection.onclose = function(reason) {
         expect(reason).to.be.equal('closed');
@@ -86,7 +97,9 @@
     connection = null;
     session = null;
     subscription = null;
-    before(function(done) {
+    before(function(done_func) {
+      var done;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000
       });
@@ -103,7 +116,9 @@
         return connection.open();
       }), CLEANUP_DELAY);
     });
-    after(function(done) {
+    after(function(done_func) {
+      var done;
+      done = D(done_func);
       connection.close();
       return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
@@ -116,7 +131,9 @@
       return expect(details).to.be.ok;
     };
     spyEvent = chai.spy(onevent);
-    it('should subscribe to a topic', function(done) {
+    it('should subscribe to a topic', function(done_func) {
+      var done;
+      done = D(done_func);
       logger.info('try to subscribe');
       expect(session.isOpen).to.be["true"];
       return session.subscribe('com.example.inge', spyEvent).then(function(s) {
@@ -127,7 +144,9 @@
         return done(new TypeError(err.stack));
       }).done();
     });
-    it('should publish to a topic', function(done) {
+    it('should publish to a topic', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       session.publish('com.example.inge', ['hello inge!'], {
         to: 'inge'
@@ -143,7 +162,9 @@
         return done();
       }), 500);
     });
-    return it('should unsubscribe from a topic', function(done) {
+    return it('should unsubscribe from a topic', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       return session.unsubscribe(subscription).then(function() {
         return done();
@@ -159,7 +180,9 @@
     connection = null;
     session = null;
     registration = null;
-    before(function(done) {
+    before(function(done_func) {
+      var done;
+      done = D(done_func);
       router = wampeter.createRouter({
         port: 3000
       });
@@ -175,7 +198,9 @@
         return connection.open();
       }), CLEANUP_DELAY);
     });
-    after(function(done) {
+    after(function(done_func) {
+      var done;
+      done = D(done_func);
       connection.close();
       return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
@@ -192,7 +217,9 @@
       }
     };
     spyCall = chai.spy(onCall);
-    it('should register a remote procedure', function(done) {
+    it('should register a remote procedure', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       return session.register('com.example.inge', spyCall).then(function(r) {
         expect(r).to.have.property('id');
@@ -202,7 +229,9 @@
         return console.log(err.stack);
       }).done();
     });
-    it('should call a remote procedure', function(done) {
+    it('should call a remote procedure', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       return session.call('com.example.inge', ['hello inge!'], {
         to: 'inge'
@@ -214,7 +243,9 @@
         return done(new Error(err));
       }).done();
     });
-    it('should return an error, if remote procedure throws', function(done) {
+    it('should return an error, if remote procedure throws', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       return session.call('com.example.inge', ['hello inge!'], {
         to: 'world'
@@ -227,7 +258,9 @@
         return done();
       });
     });
-    return it('should unregister a remote procedure', function(done) {
+    return it('should unregister a remote procedure', function(done_func) {
+      var done;
+      done = D(done_func);
       expect(session.isOpen).to.be["true"];
       return session.unregister(registration).then(function() {
         return done();
