@@ -8,6 +8,8 @@ expect   = chai.expect
 promised = require('chai-as-promised')
 spies    = require('chai-spies')
 
+D = require('./done')
+
 logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
@@ -16,7 +18,9 @@ CLEANUP_DELAY = 500
 
 describe('Router#constructor', ()->
 
-    it('should instantiate', (done)->
+    it('should instantiate', (done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({port: 3000})
         expect(router).to.be.an.instanceof(wampeter.Router)
         expect(router.roles).to.have.property('broker')
@@ -32,17 +36,23 @@ describe('Router:Session', ()->
     connection = null
     session = null
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({port: 3000})
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
-    it('should establish a new session', (done)->
+    it('should establish a new session', (done_func)->
+        done = D(done_func)
+
         router.createRealm('com.to.inge.world')
 
         connection = new autobahn.Connection({
@@ -59,7 +69,9 @@ describe('Router:Session', ()->
         connection.open()
     )
 
-    it('should close a session', (done)->
+    it('should close a session', (done_func)->
+        done = D(done_func)
+
         expect(connection).to.be.an.instanceof(autobahn.Connection)
 
         connection.onclose = (reason)->
@@ -78,7 +90,9 @@ describe('Router:Publish/Subscribe', ()->
     session = null
     subscription = null
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({port: 3000})
 
         setTimeout((()->
@@ -96,7 +110,9 @@ describe('Router:Publish/Subscribe', ()->
         ), CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         connection.close()
 
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
@@ -110,7 +126,9 @@ describe('Router:Publish/Subscribe', ()->
 
     spyEvent = chai.spy(onevent)
 
-    it('should subscribe to a topic', (done)->
+    it('should subscribe to a topic', (done_func)->
+        done = D(done_func)
+
         logger.info('try to subscribe')
         expect(session.isOpen).to.be.true
         session.subscribe('com.example.inge', spyEvent)
@@ -123,7 +141,9 @@ describe('Router:Publish/Subscribe', ()->
         ).done()
     )
 
-    it('should publish to a topic', (done)->
+    it('should publish to a topic', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.publish(
             'com.example.inge',
@@ -142,7 +162,9 @@ describe('Router:Publish/Subscribe', ()->
         ), 500)
     )
 
-    it('should unsubscribe from a topic', (done)->
+    it('should unsubscribe from a topic', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.unsubscribe(subscription).then(()->
             done()
@@ -159,7 +181,9 @@ describe('Router:Remote Procedures', ()->
     session = null
     registration = null
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({port: 3000})
 
         setTimeout((()->
@@ -176,7 +200,9 @@ describe('Router:Remote Procedures', ()->
         ), CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         connection.close()
 
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
@@ -194,7 +220,9 @@ describe('Router:Remote Procedures', ()->
 
     spyCall = chai.spy(onCall)
 
-    it('should register a remote procedure', (done)->
+    it('should register a remote procedure', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.register('com.example.inge', spyCall).then((r)->
             expect(r).to.have.property('id')
@@ -205,7 +233,9 @@ describe('Router:Remote Procedures', ()->
         ).done()
     )
 
-    it('should call a remote procedure', (done)->
+    it('should call a remote procedure', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.call('com.example.inge', ['hello inge!'], {to: 'inge'})
         .then((result)->
@@ -215,7 +245,9 @@ describe('Router:Remote Procedures', ()->
         ).catch((err)-> done(new Error(err))).done()
     )
 
-    it('should return an error, if remote procedure throws', (done)->
+    it('should return an error, if remote procedure throws', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.call('com.example.inge', ['hello inge!'], {to: 'world'})
         .catch((err)->
@@ -228,7 +260,9 @@ describe('Router:Remote Procedures', ()->
         )
     )
 
-    it('should unregister a remote procedure', (done)->
+    it('should unregister a remote procedure', (done_func)->
+        done = D(done_func)
+
         expect(session.isOpen).to.be.true
         session.unregister(registration).then(()->
             done()

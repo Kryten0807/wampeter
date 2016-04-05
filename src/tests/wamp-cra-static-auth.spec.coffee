@@ -8,6 +8,8 @@ expect   = chai.expect
 promised = require('chai-as-promised')
 spies    = require('chai-spies')
 
+D = require('./done')
+
 logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
@@ -26,7 +28,9 @@ describe('Router:Static WAMP-CRA Successes', ()->
     INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({
             port: 3000
             auth:
@@ -43,12 +47,16 @@ describe('Router:Static WAMP-CRA Successes', ()->
         setTimeout(done, CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         cleanup = ()-> router.close().then(done).catch(done).done()
         setTimeout(cleanup, CLEANUP_DELAY)
     )
 
-    it('should establish a new session via static wamp-cra authentication', (done)->
+    it('should establish a new session via static wamp-cra authentication', (done_func)->
+        done = D(done_func)
+
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
@@ -93,7 +101,9 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
     REALM = 'com.to.inge.world'
 
-    before((done)->
+    before((done_func)->
+        done = D(done_func)
+
         router = wampeter.createRouter({
             port: 3000
             auth:
@@ -110,11 +120,14 @@ describe('Router:Static WAMP-CRA Failures', ()->
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
-    after((done)->
+    after((done_func)->
+        done = D(done_func)
+
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
-    it('should fail to establish a new session - invalid key', (done)->
+    it('should fail to establish a new session - invalid key', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -143,7 +156,8 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
 
 
-    it('should fail to establish a new session - invalid auth ID & secret', (done)->
+    it('should fail to establish a new session - invalid auth ID & secret', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -175,7 +189,8 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
 
 
-    it('should fail to establish a new session - invalid challenge', (done)->
+    it('should fail to establish a new session - invalid challenge', (done_func)->
+        done = D(done_func)
 
         onchallenge = (session, method, extra)->
 
@@ -205,7 +220,9 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
 
 
-    it('should fail to establish a new session - invalid auth ID', (done)->
+    it('should fail to establish a new session - invalid auth ID', (done_func)->
+        done = D(done_func)
+
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
