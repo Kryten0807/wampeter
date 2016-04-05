@@ -1,5 +1,5 @@
 (function() {
-  var CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -22,6 +22,8 @@
   });
 
   chai.use(spies).use(promised);
+
+  CLEANUP_DELAY = 500;
 
   describe('Router:Session', function() {
     var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
@@ -50,24 +52,21 @@
           }
         }
       });
+      router.createRealm('com.to.inge.world');
       return setTimeout((function() {
         return done();
-      }), 500);
+      }), CLEANUP_DELAY);
     });
     after(function(done) {
-      return setTimeout(function() {
+      return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
-      });
+      }), CLEANUP_DELAY);
     });
-    return it('should fail to establish a new session via static wamp-cra authentication', function(done) {
+    return it('should establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;
-      router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
-        return autobahn.auth_cra.sign(VALID_KEY, {
-          a: 1,
-          b: 2
-        });
+        return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
@@ -76,8 +75,10 @@
         authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onclose = function(e) {
-        logger.error('closing', e);
+      connection.onopen = function(s) {
+        expect(s).to.be.an["instanceof"](autobahn.Session);
+        expect(s.isOpen).to.be["true"];
+        session = s;
         return done();
       };
       return connection.open();

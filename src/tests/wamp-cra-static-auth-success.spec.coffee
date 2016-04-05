@@ -1,6 +1,5 @@
 global.AUTOBAHN_DEBUG = true;
 
-
 wampeter  = require('../lib/router')
 CLogger  = require('node-clogger')
 autobahn = require('autobahn')
@@ -12,6 +11,8 @@ spies    = require('chai-spies')
 logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
+
+CLEANUP_DELAY = 500
 
 describe('Router:Session', ()->
 
@@ -37,38 +38,38 @@ describe('Router:Session', ()->
                             role: 'frontend'
         })
 
-        setTimeout((()-> done()), 500)
+        router.createRealm('com.to.inge.world')
+
+        setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
     after((done)->
-        setTimeout(()-> router.close().then(done).catch(done).done())
+        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
-    it('should fail to establish a new session via static wamp-cra authentication', (done)->
-        router.createRealm('com.to.inge.world')
-
-
+    it('should establish a new session via static wamp-cra authentication', (done)->
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
 
-            # respond to the challenge - SIGN WITH THE INVALID KEY!
+            # respond to the challenge
             #
-            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
-            # use the INVALID authid
-            #
-            authid: INVALID_AUTHID
+            authid: VALID_AUTHID
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+
+        connection.onopen = (s)->
+            expect(s).to.be.an.instanceof(autobahn.Session)
+            expect(s.isOpen).to.be.true
+            session = s
             done()
 
         connection.open()
