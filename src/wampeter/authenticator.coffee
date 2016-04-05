@@ -78,8 +78,34 @@ class Authenticator
                         throw "invalid role for user '#{k}'"
                 )
 
-                # set up the authenticate method
+                # set up the challenge generator method
                 #
+                @generateChallenge = (message)=>
+                    # extract the user ID from the message
+                    #
+                    userID = message?.details?.authid
+
+                    # find the user
+                    #
+                    user = @users[userID]
+
+                    if not user?
+                        user = null
+                        throw new Error('wamp.error.not_not_authorized')
+
+                    user.authid = userID
+
+                    challenge = JSON.stringify({
+                        authid: user.authid
+                        authrole: user.role
+                        authmethod: 'wampcra'
+                        authprovider: 'static'
+                        session: @session.id
+                        nonce: util.randomid()
+                        timestamp: Math.floor(Date.now()/1000)
+                    })
+
+                    [challenge, user]
 
             else if config.wampcra.type=='dynamic'
                 # handle DYNAMIC authentication
