@@ -181,6 +181,7 @@ class Authenticator
 
     _wampcra_challenge: (message)=>
 
+
         @user = null
 
         derive_key = (secret, salt, iterations, keylen)->
@@ -212,6 +213,8 @@ class Authenticator
             # get the details from the message
             #
             userID = message.details.authid
+
+            logger.debug("-------------- in promise #{userID}")
 
             if not userID?
                 throw new Error('no user provided')
