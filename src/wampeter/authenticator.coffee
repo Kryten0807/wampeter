@@ -91,7 +91,7 @@ class Authenticator
 
                     if not user?
                         user = null
-                        throw new Error('wamp.error.not_not_authorized')
+                        throw new Error('wamp.error.not_authorized')
 
                     user.authid = userID
 
@@ -130,7 +130,7 @@ class Authenticator
 
                     if not credentials?
                         credentials = null
-                        throw new Error('wamp.error.not_not_authorized')
+                        throw new Error('wamp.error.not_authorized')
 
                     credentials.authid = authid
 
@@ -175,7 +175,7 @@ class Authenticator
                 @user.authid
             else
                 @user = null
-                throw new Error('wamp.error.not_not_authorized')
+                throw new Error('wamp.error.not_authorized')
         )
 
 
