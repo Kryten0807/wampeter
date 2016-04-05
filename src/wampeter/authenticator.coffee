@@ -97,6 +97,11 @@ class Authenticator
             else if config.wampcra.type=='dynamic'
                 # handle DYNAMIC authentication
 
+                # do we have an authenticator function? if not, throw an error
+                #
+                if not config.wampcra.authenticator? or not _.isFunction(config.wampcra.authenticator)
+                    throw 'missing/invalid wamp-cra authenticator function'
+
                 throw 'dynamic wamp-cra not implemented yet'
             else
                 # is the type static? if so, then carry on
