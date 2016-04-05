@@ -25,7 +25,7 @@
 
   CLEANUP_DELAY = 500;
 
-  describe('Router:Session', function() {
+  describe('Router:Static WAMP-CRA Failures', function() {
     var INVALID_AUTHID, INVALID_KEY, REALM, VALID_AUTHID, VALID_KEY, connection, router, session;
     router = null;
     connection = null;

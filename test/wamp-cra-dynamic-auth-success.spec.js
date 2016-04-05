@@ -25,34 +25,39 @@
 
   CLEANUP_DELAY = 500;
 
-  describe('Router:Static WAMP-CRA Successes', function() {
-    var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
+  describe('Router:Session', function() {
+    var AUTHENTICATOR_URI, BASE_URI, INVALID_AUTHID, INVALID_KEY, REALM_URI, VALID_AUTHID, VALID_KEY, authenticator, authenticator_connection, authenticator_session, connection, router, session;
     router = null;
     connection = null;
     session = null;
+    authenticator_connection = null;
+    authenticator_session = null;
+    BASE_URI = 'com.to.inge';
+    REALM_URI = BASE_URI + '.world';
+    AUTHENTICATOR_URI = BASE_URI + '.authenticate';
     VALID_AUTHID = 'nicolas.cage';
     VALID_KEY = 'abc123';
     INVALID_AUTHID = 'david.hasselhoff';
     INVALID_KEY = 'xyz789';
+    authenticator = function(realm, authid, details) {
+      expect(realm).to.be.equal(REALM_URI);
+      expect(authid).to.be.equal(VALID_AUTHID);
+      return {
+        secret: VALID_KEY,
+        role: 'frontend'
+      };
+    };
     before(function(done) {
-      var obj;
       router = wampeter.createRouter({
         port: 3000,
         auth: {
           wampcra: {
-            type: 'static',
-            users: (
-              obj = {},
-              obj["" + VALID_AUTHID] = {
-                secret: VALID_KEY,
-                role: 'frontend'
-              },
-              obj
-            )
+            type: 'dynamic',
+            authenticator: authenticator
           }
         }
       });
-      router.createRealm('com.to.inge.world');
+      router.createRealm(REALM_URI);
       return setTimeout(done, CLEANUP_DELAY);
     });
     after(function(done) {
@@ -60,14 +65,14 @@
         return router.close().then(done)["catch"](done).done();
       }), CLEANUP_DELAY);
     });
-    return it('should establish a new session via static wamp-cra authentication', function(done) {
+    return it('should establish a new session via dynamic wamp-cra authentication', function(done) {
       var onchallenge;
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
       connection = new autobahn.Connection({
-        realm: 'com.to.inge.world',
+        realm: REALM_URI,
         url: 'ws://localhost:3000/wampeter',
         authmethods: ['wampcra'],
         authid: VALID_AUTHID,
