@@ -26,6 +26,8 @@ describe('Router:Session', ()->
     INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
 
+    REALM = 'com.to.inge.world'
+
     before((done)->
         router = wampeter.createRouter({
             port: 3000
@@ -38,6 +40,8 @@ describe('Router:Session', ()->
                             role: 'frontend'
         })
 
+        router.createRealm(REALM)
+
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
@@ -46,8 +50,6 @@ describe('Router:Session', ()->
     )
 
     it('should fail to establish a new session - invalid key', (done)->
-        router.createRealm('com.to.inge.world')
-
 
         onchallenge = (session, method, extra)->
 
@@ -58,7 +60,7 @@ describe('Router:Session', ()->
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
+            realm: REALM
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -77,8 +79,6 @@ describe('Router:Session', ()->
 
 
     it('should fail to establish a new session - invalid auth ID & secret', (done)->
-        router.createRealm('com.to.inge.world')
-
 
         onchallenge = (session, method, extra)->
 
@@ -89,7 +89,7 @@ describe('Router:Session', ()->
             autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
+            realm: REALM
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -111,8 +111,6 @@ describe('Router:Session', ()->
 
 
     it('should fail to establish a new session - invalid challenge', (done)->
-        router.createRealm('com.to.inge.world')
-
 
         onchallenge = (session, method, extra)->
 
@@ -123,7 +121,7 @@ describe('Router:Session', ()->
             autobahn.auth_cra.sign(VALID_KEY, {a:1, b:2})
 
         connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
+            realm: REALM
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
@@ -143,9 +141,6 @@ describe('Router:Session', ()->
 
 
     it('should fail to establish a new session - invalid auth ID', (done)->
-        router.createRealm('com.to.inge.world')
-
-
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
@@ -155,7 +150,7 @@ describe('Router:Session', ()->
             autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
 
         connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
+            realm: REALM
             url: 'ws://localhost:3000/wampeter'
 
             authmethods: ['wampcra']
