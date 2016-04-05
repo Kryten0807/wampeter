@@ -52,6 +52,7 @@
           }
         }
       });
+      router.createRealm('com.to.inge.world');
       return setTimeout((function() {
         return done();
       }), CLEANUP_DELAY);
@@ -63,7 +64,6 @@
     });
     return it('should establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;
-      router.createRealm('com.to.inge.world');
       onchallenge = function(session, method, extra) {
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
