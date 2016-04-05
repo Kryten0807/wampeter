@@ -125,6 +125,7 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
+
     it('should fail to establish a new session - invalid key', (done_func)->
         done = D(done_func)
 
@@ -146,8 +147,12 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
         connection.open()
@@ -183,8 +188,12 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
         connection.open()
@@ -215,14 +224,17 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
+
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
             done()
 
 
         connection.open()
     )
-
 
     it('should fail to establish a new session - invalid auth ID', (done_func)->
         done = D(done_func)
@@ -245,10 +257,13 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             onchallenge: onchallenge
         })
 
-        connection.onclose = (e)->
-            logger.error('closing', e)
-            done()
+        connection.onclose = (reason, message)->
+            console.log('------------------------ onclose', message)
 
+            expect(message).to.have.property('reason')
+            expect(message.reason).to.equal('wamp.error.not_authorized')
+
+            done()
 
         connection.open()
     )
