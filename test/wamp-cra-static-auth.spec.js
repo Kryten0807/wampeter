@@ -145,8 +145,10 @@
         authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onclose = function(e) {
-        logger.error('closing', e);
+      connection.onclose = function(reason, message) {
+        console.log('------------------------ onclose', message);
+        expect(message).to.have.property('reason');
+        expect(message.reason).to.equal('wamp.error.not_authorized');
         return done();
       };
       return connection.open();
@@ -165,8 +167,10 @@
         authid: INVALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onclose = function(e) {
-        logger.error('closing', e);
+      connection.onclose = function(reason, message) {
+        console.log('------------------------ onclose', message);
+        expect(message).to.have.property('reason');
+        expect(message.reason).to.equal('wamp.error.not_authorized');
         return done();
       };
       return connection.open();
@@ -188,8 +192,10 @@
         authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onclose = function(e) {
-        logger.error('closing', e);
+      connection.onclose = function(reason, message) {
+        console.log('------------------------ onclose', message);
+        expect(message).to.have.property('reason');
+        expect(message.reason).to.equal('wamp.error.not_authorized');
         return done();
       };
       return connection.open();
@@ -208,8 +214,10 @@
         authid: INVALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onclose = function(e) {
-        logger.error('closing', e);
+      connection.onclose = function(reason, message) {
+        console.log('------------------------ onclose', message);
+        expect(message).to.have.property('reason');
+        expect(message.reason).to.equal('wamp.error.not_authorized');
         return done();
       };
       return connection.open();
