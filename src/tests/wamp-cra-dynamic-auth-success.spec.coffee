@@ -35,8 +35,6 @@ describe('Router:Session', ()->
 
 
     authenticator = (realm, authid, details)->
-        logger.info("******** authenticator called #{realm} #{authid}", details)
-
         expect(realm).to.be.equal(REALM_URI)
         expect(authid).to.be.equal(VALID_AUTHID)
 
@@ -58,7 +56,7 @@ describe('Router:Session', ()->
 
         router.createRealm(REALM_URI)
 
-        setTimeout((()-> done()), CLEANUP_DELAY)
+        setTimeout(done, CLEANUP_DELAY)
     )
 
     after((done)->
