@@ -242,8 +242,6 @@ class Authenticator
 
         )
 
-    getUser: ()=> @user
-
 module.exports = (session, authConfig)->
     logger.debug('in authenticator factory', authConfig)
     if authConfig==null then null else new Authenticator(session, authConfig)
