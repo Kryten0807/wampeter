@@ -1,5 +1,5 @@
 (function() {
-  var CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -22,6 +22,8 @@
   });
 
   chai.use(spies).use(promised);
+
+  CLEANUP_DELAY = 500;
 
   describe('Router:Session', function() {
     var INVALID_AUTHID, INVALID_KEY, VALID_AUTHID, VALID_KEY, connection, router, session;
@@ -52,12 +54,12 @@
       });
       return setTimeout((function() {
         return done();
-      }), 500);
+      }), CLEANUP_DELAY);
     });
     after(function(done) {
-      return setTimeout(function() {
+      return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
-      });
+      }), CLEANUP_DELAY);
     });
     return it('should establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;

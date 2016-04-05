@@ -1,5 +1,5 @@
 (function() {
-  var CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -22,6 +22,8 @@
   });
 
   chai.use(spies).use(promised);
+
+  CLEANUP_DELAY = 500;
 
   describe('Router#constructor', function() {
     return it('should instantiate', function(done) {
@@ -47,12 +49,12 @@
       });
       return setTimeout((function() {
         return done();
-      }), 500);
+      }), CLEANUP_DELAY);
     });
     after(function(done) {
-      return setTimeout(function() {
+      return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
-      });
+      }), CLEANUP_DELAY);
     });
     it('should establish a new session', function(done) {
       router.createRealm('com.to.inge.world');
@@ -99,13 +101,13 @@
           return done();
         };
         return connection.open();
-      }), 500);
+      }), CLEANUP_DELAY);
     });
     after(function(done) {
       connection.close();
-      return setTimeout(function() {
+      return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
-      });
+      }), CLEANUP_DELAY);
     });
     onevent = function(args, kwargs, details) {
       logger.info('on event');
@@ -171,13 +173,13 @@
           return done();
         };
         return connection.open();
-      }), 500);
+      }), CLEANUP_DELAY);
     });
     after(function(done) {
       connection.close();
-      return setTimeout(function() {
+      return setTimeout((function() {
         return router.close().then(done)["catch"](done).done();
-      });
+      }), CLEANUP_DELAY);
     });
     onCall = function(args, kwargs, details) {
       expect(args).to.be.deep.equal(['hello inge!']);
