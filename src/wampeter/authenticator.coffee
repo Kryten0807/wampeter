@@ -216,24 +216,7 @@ class Authenticator
             if not userID?
                 throw new Error('no user provided')
 
-            # find the user
-            #
-            @user = @users[userID]
-            if not @user?
-                @user = null
-                throw new Error('wamp.error.not_not_authorized')
-
-            @user.authid = userID
-
-            challenge = JSON.stringify({
-                authid: @user.authid
-                authrole: @user.role
-                authmethod: 'wampcra'
-                authprovider: 'static'
-                session: @session.id
-                nonce: util.randomid()
-                timestamp: Math.floor(Date.now()/1000)
-            })
+            [challenge, @user] = @generateChallenge(message)
 
             extra =
                 challenge: challenge
