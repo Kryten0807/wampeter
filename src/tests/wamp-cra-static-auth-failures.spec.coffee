@@ -26,7 +26,7 @@ describe('Router:Session', ()->
     INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
 
-    beforeEach((done)->
+    before((done)->
         router = wampeter.createRouter({
             port: 3000
             auth:
@@ -41,7 +41,7 @@ describe('Router:Session', ()->
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
-    afterEach((done)->
+    after((done)->
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
