@@ -44,7 +44,8 @@ describe('Router:Static WAMP-CRA Successes', ()->
     )
 
     after((done)->
-        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
+        cleanup = ()-> router.close().then(done).catch(done).done()
+        setTimeout(cleanup, CLEANUP_DELAY)
     )
 
     it('should establish a new session via static wamp-cra authentication', (done)->
