@@ -25,13 +25,11 @@
 
   CLEANUP_DELAY = 500;
 
-  describe('Router:Session', function() {
-    var AUTHENTICATOR_URI, BASE_URI, INVALID_AUTHID, INVALID_KEY, REALM_URI, VALID_AUTHID, VALID_KEY, authenticator, authenticator_connection, authenticator_session, connection, router, session;
+  describe('Router:Dynamic WAMP-CRA Success', function() {
+    var AUTHENTICATOR_URI, BASE_URI, INVALID_AUTHID, INVALID_KEY, REALM_URI, VALID_AUTHID, VALID_KEY, authenticator, connection, router, session;
     router = null;
     connection = null;
     session = null;
-    authenticator_connection = null;
-    authenticator_session = null;
     BASE_URI = 'com.to.inge';
     REALM_URI = BASE_URI + '.world';
     AUTHENTICATOR_URI = BASE_URI + '.authenticate';

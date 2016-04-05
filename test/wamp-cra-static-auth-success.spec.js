@@ -56,9 +56,11 @@
       return setTimeout(done, CLEANUP_DELAY);
     });
     after(function(done) {
-      return setTimeout((function() {
+      var cleanup;
+      cleanup = function() {
         return router.close().then(done)["catch"](done).done();
-      }), CLEANUP_DELAY);
+      };
+      return setTimeout(cleanup, CLEANUP_DELAY);
     });
     return it('should establish a new session via static wamp-cra authentication', function(done) {
       var onchallenge;
