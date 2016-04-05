@@ -80,7 +80,20 @@ class Authenticator
 
                 # set up the authenticate method
                 #
-                @authenticate = @_wampcra_authenticate
+                @authenticate = (message)=>
+                    q.fcall(()=>
+                        logger.debug('authenticating', message)
+
+                        logger.debug('----- auth sig', message.signature)
+                        logger.debug('----- auth should be', @signature)
+
+                        if message.signature? and message.signature==@signature
+                            @user.authid
+                        else
+                            @user = null
+                            throw new Error('wamp.error.not_not_authorized')
+                    )
+
             else if config.wampcra.type=='dynamic'
                 # handle DYNAMIC authentication
 
@@ -177,20 +190,6 @@ class Authenticator
 
             {authmethod: 'wampcra', extra: extra}
 
-        )
-
-    _wampcra_authenticate: (message)=>
-        q.fcall(()=>
-            logger.debug('authenticating', message)
-
-            logger.debug('----- auth sig', message.signature)
-            logger.debug('----- auth should be', @signature)
-
-            if message.signature? and message.signature==@signature
-                @user.authid
-            else
-                @user = null
-                throw new Error('wamp.error.not_not_authorized')
         )
 
     getUser: ()=> @user
