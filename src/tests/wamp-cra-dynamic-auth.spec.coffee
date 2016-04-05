@@ -8,6 +8,8 @@ expect   = chai.expect
 promised = require('chai-as-promised')
 spies    = require('chai-spies')
 
+D = require('./done')
+
 logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
@@ -26,6 +28,8 @@ describe('Router:Dynamic WAMP-CRA Success', ()->
 
     VALID_AUTHID = 'nicolas.cage'
     VALID_KEY = 'abc123'
+    before((done_func)->
+        done = D(done_func)
 
     INVALID_AUTHID = 'david.hasselhoff'
     INVALID_KEY = 'xyz789'
@@ -53,11 +57,16 @@ describe('Router:Dynamic WAMP-CRA Success', ()->
         setTimeout(done, CLEANUP_DELAY)
     )
 
-    after((done)->
-        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
+    after((done_func)->
+        done = D(done_func)
+
+        cleanup = ()-> router.close().then(done).catch(done).done()
+        setTimeout(cleanup, CLEANUP_DELAY)
     )
 
-    it('should establish a new session via dynamic wamp-cra authentication', (done)->
+    it('should establish a new session via static wamp-cra authentication', (done_func)->
+        done = D(done_func)
+
         onchallenge = (session, method, extra)->
 
             expect(method).to.equal('wampcra')
