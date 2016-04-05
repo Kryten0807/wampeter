@@ -47,40 +47,50 @@ class Authenticator
             if not config.wampcra?
                 throw 'no wampcra config'
 
-            # is the type static? if so, then carry on
+            # set up authentication based on the type
             #
-            if config.wampcra.type!='static' and config.wampcra.type!='dynamic'
-                throw 'non-static wampcra config'
+            if config.wampcra.type=='static'
+                # handle STATIC authentication
 
-            # do we have a list of users?
-            #
-            if not config.wampcra.users?
-                throw 'no users defined'
+                # do we have a list of users?
+                #
+                if not config.wampcra.users?
+                    throw 'no users defined'
 
-            # build a list of users which are properly formatted
-            #
-            @users = config.wampcra.users
+                # build a list of users which are properly formatted
+                #
+                @users = config.wampcra.users
 
-            _.forEach(@users, (v, k)->
-                if not _.isPlainObject(v)
-                    throw "invalid details for user '#{k}'"
+                _.forEach(@users, (v, k)->
+                    if not _.isPlainObject(v)
+                        throw "invalid details for user '#{k}'"
 
-                if not v.secret?
-                    throw "missing secret for user '#{k}'"
+                    if not v.secret?
+                        throw "missing secret for user '#{k}'"
 
-                if not _.isString(v.secret)
-                    throw "invalid secret for user '#{k}'"
+                    if not _.isString(v.secret)
+                        throw "invalid secret for user '#{k}'"
 
-                if not v.role?
-                    throw "missing role for user '#{k}'"
+                    if not v.role?
+                        throw "missing role for user '#{k}'"
 
-                if not _.isString(v.role)
-                    throw "invalid role for user '#{k}'"
-            )
+                    if not _.isString(v.role)
+                        throw "invalid role for user '#{k}'"
+                )
 
-            # set up the authenticate method
-            #
-            @authenticate = @_wampcra_authenticate
+                # set up the authenticate method
+                #
+                @authenticate = @_wampcra_authenticate
+            else if config.wampcra.type=='dynamic'
+                # handle DYNAMIC authentication
+
+                throw 'dynamic wamp-cra not implemented yet'
+            else
+                # is the type static? if so, then carry on
+                #
+                throw 'unrecognized wamp-cra type'
+
+
 
         catch err
             # the config failed validation somewhere. Log the error
