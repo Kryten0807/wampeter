@@ -40,7 +40,7 @@ describe('Router:Static WAMP-CRA Successes', ()->
 
         router.createRealm('com.to.inge.world')
 
-        setTimeout((()-> done()), CLEANUP_DELAY)
+        setTimeout(done, CLEANUP_DELAY)
     )
 
     after((done)->
