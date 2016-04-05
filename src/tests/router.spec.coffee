@@ -12,6 +12,7 @@ logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
 
+CLEANUP_DELAY = 500
 
 describe('Router#constructor', ()->
 
@@ -34,11 +35,11 @@ describe('Router:Session', ()->
     before((done)->
         router = wampeter.createRouter({port: 3000})
 
-        setTimeout((()-> done()), 500)
+        setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
     after((done)->
-        setTimeout(()-> router.close().then(done).catch(done).done())
+        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
     it('should establish a new session', (done)->
@@ -92,13 +93,13 @@ describe('Router:Publish/Subscribe', ()->
                 done()
 
             connection.open()
-        ), 500)
+        ), CLEANUP_DELAY)
     )
 
     after((done)->
         connection.close()
 
-        setTimeout(()-> router.close().then(done).catch(done).done())
+        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
     onevent = (args, kwargs, details)->
@@ -172,13 +173,13 @@ describe('Router:Remote Procedures', ()->
                 done()
 
             connection.open()
-        ), 500)
+        ), CLEANUP_DELAY)
     )
 
     after((done)->
         connection.close()
 
-        setTimeout(()-> router.close().then(done).catch(done).done())
+        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
     onCall = (args, kwargs, details)->

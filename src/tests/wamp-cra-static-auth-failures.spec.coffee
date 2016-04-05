@@ -12,6 +12,8 @@ logger = new CLogger({name: 'router-tests'})
 
 chai.use(spies).use(promised)
 
+CLEANUP_DELAY = 500
+
 describe('Router:Session', ()->
 
     router = null
@@ -36,14 +38,11 @@ describe('Router:Session', ()->
                             role: 'frontend'
         })
 
-        setTimeout((()-> done()), 500)
+        setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
     afterEach((done)->
-        setTimeout(
-            ()->
-                router.close().then(done).catch(done).done()
-        )
+        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
     it('should fail to establish a new session - invalid key', (done)->
