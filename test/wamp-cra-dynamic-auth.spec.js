@@ -1,5 +1,5 @@
 (function() {
-  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, REALM_URI, ROUTER_CONFIG, VALID_AUTHID, VALID_KEY, authenticator, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, PORT, REALM_URI, ROUTER_CONFIG, URL, VALID_AUTHID, VALID_KEY, authenticator, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -27,6 +27,10 @@
 
   CLEANUP_DELAY = 500;
 
+  PORT = 3000;
+
+  URL = "ws://localhost:" + PORT;
+
   BASE_URI = 'com.to.inge';
 
   REALM_URI = BASE_URI + '.world';
@@ -48,7 +52,14 @@
   };
 
   ROUTER_CONFIG = {
-    port: 3000,
+    port: PORT,
+    realms: {
+      REALM_URI: {
+        roles: {
+          frontend: {}
+        }
+      }
+    },
     auth: {
       wampcra: {
         type: 'dynamic',
