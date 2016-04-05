@@ -40,6 +40,12 @@ describe('Router:Session', ()->
         expect(realm).to.be.equal(REALM_URI)
         expect(authid).to.be.equal(VALID_AUTHID)
 
+        {
+            secret: VALID_KEY
+            role: 'frontend'
+        }
+
+
 
     before((done)->
         router = wampeter.createRouter({
