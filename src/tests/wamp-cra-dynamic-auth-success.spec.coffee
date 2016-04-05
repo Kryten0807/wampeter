@@ -20,9 +20,6 @@ describe('Router:Session', ()->
     connection = null
     session = null
 
-    authenticator_connection = null
-    authenticator_session = null
-
     BASE_URI = 'com.to.inge'
     REALM_URI = BASE_URI + '.world'
     AUTHENTICATOR_URI = BASE_URI + '.authenticate'
