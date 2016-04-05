@@ -16,6 +16,8 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
+PORT = 3000
+URL = "ws://localhost:#{PORT}"
 
 BASE_URI = 'com.to.inge'
 REALM_URI = BASE_URI + '.world'
@@ -32,8 +34,15 @@ authenticator = (realm, authid, details)->
 
     { secret: VALID_KEY, role: 'frontend' }
 
+
 ROUTER_CONFIG =
-    port: 3000
+    port: PORT
+
+    realms:
+        REALM_URI:
+            roles:
+                frontend: {}
+
     auth:
         wampcra:
             type: 'dynamic'
