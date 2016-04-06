@@ -16,6 +16,74 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
+
+
+
+
+
+
+
+
+
+
+PORT = 3000
+URL = "ws://localhost:#{PORT}"
+
+BASE_URI = 'com.to.inge'
+REALM_URI = BASE_URI + '.world'
+
+VALID_AUTHID = 'nicolas.cage'
+VALID_KEY = 'abc123'
+
+INVALID_AUTHID = 'david.hasselhoff'
+INVALID_KEY = 'xyz789'
+
+ROLE = 'role_1'
+
+
+
+ROUTER_CONFIG =
+    port: PORT
+
+    # path: '/wampeter'
+    # autoCreateRealms: true
+    # logger: new CLogger({name: 'nightlife-router'})
+
+    realm: REALM_URI
+
+    roles:
+        "#{ROLE}": {
+            # permissions go here
+        }
+
+    auth:
+        wampcra:
+            type: 'static'
+            users:
+                "#{VALID_AUTHID}":
+                    secret: VALID_KEY
+                    role: 'frontend'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 describe('Router#constructor', ()->
 
     it('should instantiate', (done_func)->
