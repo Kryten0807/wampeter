@@ -88,7 +88,25 @@ class Realm
             if @topics[uri]?
                 @topics[uri]
             else
-                throw new Error('wamp.error.no_such_subscription')
+                # important note: previously, the behaviour of the router was to
+                # throw an exception if an attempt was made to publish to a
+                # topic which has no subscribers. This was done by throwing the
+                # following exception:
+                #
+                # throw new Error('wamp.error.no_such_subscription')
+                #
+                # This is not the behaviour defined by the standard (see
+                # https://tools.ietf.org/html/draft-oberstet-hybi-tavendo-wamp-02#page-39).
+                # In fact, the standard does not specify how the router should
+                # behave in this case.
+                #
+                # In my opinion, it makes more sense for the router to simply
+                # consume the publication silently - after all, if the client
+                # publishes to a topic to which nobody has subscribed, it's not
+                # the client's problem and the client should not have to deal
+                # with an error.
+                #
+                null
         else
             throw new TypeError('wamp.error.invalid_uri')
 
