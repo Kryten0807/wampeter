@@ -215,4 +215,102 @@ describe('Router:Static Authorization', ()->
             ).done()
         )
     )
+
+
+
+
+    it('should successfully call when call permitted - complex config', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        config =
+            '*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.auth*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+                done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.no_such_registration')
+                done()
+            ).done()
+        )
+    )
+
+    it('should fail to call when call disallowed - complex config', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        # note that the com.example.* rule actually specifies call = false, so
+        # the test should pass with a "not authorized" error
+        #
+        config =
+            '*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.*':
+                call: false         # look at this!
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.auth*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+
+                done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.not_authorized')
+
+                done()
+            ).done()
+        )
+    )
+
 )
