@@ -64,7 +64,7 @@ INVALID_KEY = 'xyz789'
 
 
 
-describe('Router:Static Authorization', ()->
+describe('Router:Static Authorization CALL', ()->
 
     router = null
     connection = null
