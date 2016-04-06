@@ -165,17 +165,13 @@ describe('Router:Static Authorization', ()->
         logger.debug('------------- in test method')
         done = D(done_func)
 
-        config = [
-            {
-                uri: '*'
-                allow: {
-                    call: true
-                    register: false
-                    subscribe: false
-                    publish: false
-                }
-            }
-        ]
+        config =
+            '*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+
 
         connect(config)
         .then((session)->
