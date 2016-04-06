@@ -14,15 +14,21 @@ _               = require('lodash')
 
 class Router extends WebSocketServer
     constructor: (opts)->
+        # retrieve configuration and update with default values
+        #
         @config = new CConf('router', [], {
             'path'             : '/wampeter'
             'autoCreateRealms' : true
         }).load(opts || {})
 
+        # initialize the list of realms
+        #
         @realms = {}
 
         logger.info("router option for auto-creating realms is #{if @config.getValue('autoCreateRealms') then 'set' else 'not set'}")
 
+        # configure the HTTP server if it's not already set
+        #
         @server = @config.getValue('httpServer')
         if not @server?
             @server = http.createServer((req, res)->
@@ -30,10 +36,14 @@ class Router extends WebSocketServer
                 res.end('This is the Wampeter WAMP transport. Please connect over WebSocket!')
             )
 
+        # set up the error handler for the HTTP server
+        #
         @server.on('error', (err)->
             logger.error('httpServer error:', err.stack)
         )
 
+        # configure the listening port
+        #
         port = @config.getValue('port')
         if port?
             @server.listen(port, ()->
