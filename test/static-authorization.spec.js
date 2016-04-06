@@ -85,7 +85,7 @@
         connection.open()
     )
      */
-    after(function(done_func) {
+    afterEach(function(done_func) {
       var cleanup, done;
       done = D(done_func);
       cleanup = function() {
@@ -100,8 +100,6 @@
       cfg.realms[REALM_URI].roles[ROLE] = authConfig;
       router = wampeter.createRouter(cfg);
       onchallenge = function(session, method, extra) {
-        console.log('++++++++++ onchallenge session', session);
-        console.log('++++++++++ onchallenge extra', extra);
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
@@ -113,42 +111,60 @@
         onchallenge: onchallenge
       });
       connection.onopen = function(session) {
-        logger.debug('------------- onopen', session);
         expect(session).to.be.an["instanceof"](autobahn.Session);
         expect(session.isOpen).to.be["true"];
-        logger.debug('------------- onopen - resolving deferred');
         return setTimeout((function() {
           return deferred.resolve(session);
         }), CLEANUP_DELAY);
       };
-      logger.debug('------------- opening connection');
       connection.open();
       return deferred.promise;
     };
-    return it('should successfully call when call permitted', function(done_func) {
+    it('should successfully call when call permitted', function(done_func) {
       var config, done;
       logger.debug('------------- in test method');
       done = D(done_func);
-      config = [
-        {
-          uri: '*',
-          allow: {
-            call: true,
-            register: false,
-            subscribe: false,
-            publish: false
-          }
+      config = {
+        '*': {
+          call: true,
+          register: false,
+          subscribe: false,
+          publish: false
         }
-      ];
+      };
       return connect(config).then(function(session) {
-        logger.debug('------------- in connect deferred', session);
         return session.call('com.example.authtest', ['hello inge!'], {
           to: 'inge'
         }).then(function(result) {
           console.log('------------------ RPC', result);
           return done();
         })["catch"](function(err) {
-          return done(new Error(err));
+          expect(err.error).to.equal('wamp.error.no_such_registration');
+          return done();
+        }).done();
+      });
+    });
+    return it('should fail to call when call disallowed', function(done_func) {
+      var config, done;
+      logger.debug('------------- in test method');
+      done = D(done_func);
+      config = {
+        '*': {
+          call: false,
+          register: false,
+          subscribe: false,
+          publish: false
+        }
+      };
+      return connect(config).then(function(session) {
+        return session.call('com.example.authtest', ['hello inge!'], {
+          to: 'inge'
+        }).then(function(result) {
+          console.log('------------------ RPC', result);
+          return done();
+        })["catch"](function(err) {
+          expect(err.error).to.equal('wamp.error.not_authorized');
+          return done();
         }).done();
       });
     });

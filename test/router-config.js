@@ -20,7 +20,7 @@
   authenticator = function(realm, authid, details) {
     return {
       secret: VALID_KEY,
-      role: 'frontend'
+      role: ROLE
     };
   };
 
@@ -50,7 +50,7 @@
         obj2 = {},
         obj2["" + VALID_AUTHID] = {
           secret: VALID_KEY,
-          role: 'frontend'
+          role: ROLE
         },
         obj2
       )
