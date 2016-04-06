@@ -16,56 +16,16 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
-PORT = 3000
-URL = "ws://localhost:#{PORT}"
 
-BASE_URI = 'com.to.inge'
-REALM_URI = BASE_URI + '.world'
+Cfg = require('./router-config')
 
-VALID_AUTHID = 'nicolas.cage'
-VALID_KEY = 'abc123'
+ROUTER_CONFIG = Cfg.dynamic
+REALM_URI =     Cfg.realm
+VALID_AUTHID =  Cfg.valid_authid
+VALID_KEY =     Cfg.valid_key
 
 INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
-
-ROLE = 'role_1'
-
-authenticator = (realm, authid, details)->
-    expect(realm).to.be.equal(REALM_URI)
-
-    { secret: VALID_KEY, role: ROLE }
-
-
-
-
-
-ROUTER_CONFIG =
-    port: PORT
-
-    # path: '/wampeter'
-    # autoCreateRealms: true
-    # logger: new CLogger({name: 'nightlife-router'})
-
-    realm: REALM_URI
-
-    roles:
-        "#{ROLE}": {
-            # permissions go here
-        }
-
-    auth:
-        wampcra:
-            type: 'dynamic'
-            authenticator: authenticator
-
-
-
-
-
-
-
-
-
 
 
 
