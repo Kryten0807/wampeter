@@ -234,23 +234,28 @@ class Session extends EventEmitter
                     @close(1009, 'wamp.error.close_normal')
 
                 when 'SUBSCRIBE'
-                    q.fcall(()=>
-                        logger.debug('try to subscribe to topic:', message.topic)
-                        defer = q.defer()
-                        @emit('subscribe', message.topic, defer)
-                        defer.promise
-                    ).then((subscriptionId)=>
-                        @send('SUBSCRIBED', {
-                            subscribe:
-                                request:
-                                    id: message.request.id
-                            subscription:
-                                id: subscriptionId
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot subscribe to topic', @realm, message.topic, err.stack)
-                        @error('SUBSCRIBE', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.topic, 'subscribe')
+                        q.fcall(()=>
+                            logger.debug('try to subscribe to topic:', message.topic)
+                            defer = q.defer()
+                            @emit('subscribe', message.topic, defer)
+                            defer.promise
+                        ).then((subscriptionId)=>
+                            @send('SUBSCRIBED', {
+                                subscribe:
+                                    request:
+                                        id: message.request.id
+                                subscription:
+                                    id: subscriptionId
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot subscribe to topic', @realm, message.topic, err.stack)
+                            @error('SUBSCRIBE', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('SUBSCRIBE', message.request.id, new TypeError('wamp.error.not_authorized'))
+
 
                 when 'UNSUBSCRIBE'
                     q.fcall(()=>
