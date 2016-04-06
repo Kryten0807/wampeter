@@ -17,16 +17,6 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-
-
-
-
-
-
-
-
-
-
 Cfg = require('./router-config')
 
 ROUTER_CONFIG = Cfg.static
@@ -44,17 +34,6 @@ INVALID_KEY = 'xyz789'
 delete(ROUTER_CONFIG.auth)
 
 
-
-
-
-
-
-
-
-
-
-
-
 describe('Router#constructor', ()->
 
     it('should instantiate', (done_func)->
@@ -67,8 +46,8 @@ describe('Router#constructor', ()->
         expect(router.roles).to.have.property('dealer')
         router.close().then(done).catch(done).done()
     )
-
 )
+
 
 describe('Router:Session', ()->
 
