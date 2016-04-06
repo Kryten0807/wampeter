@@ -28,19 +28,29 @@ VALID_KEY = 'abc123'
 INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
 
+ROLE = 'role_1'
 
 authenticator = (realm, authid, details)->
     expect(realm).to.be.equal(REALM_URI)
 
     { secret: VALID_KEY, role: 'frontend' }
 
+
+
+
 ROUTER_CONFIG =
     port: PORT
 
-    realms:
-        REALM_URI:
-            roles:
-                frontend: {}
+    # path: '/wampeter'
+    # autoCreateRealms: true
+    # logger: new CLogger({name: 'nightlife-router'})
+
+    realm: REALM_URI
+
+    roles:
+        "#{ROLE}": {
+            # permissions go here
+        }
 
     auth:
         wampcra:
@@ -49,6 +59,9 @@ ROUTER_CONFIG =
                 "#{VALID_AUTHID}":
                     secret: VALID_KEY
                     role: 'frontend'
+
+
+
 
 describe('Router:Static WAMP-CRA Successes', ()->
 
