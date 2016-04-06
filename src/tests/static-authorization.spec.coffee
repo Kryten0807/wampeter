@@ -16,32 +16,6 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
-PORT = 3000
-URL = "ws://localhost:#{PORT}"
-
-BASE_URI = 'com.to.inge'
-REALM_URI = BASE_URI + '.world'
-
-VALID_AUTHID = 'nicolas.cage'
-VALID_KEY = 'abc123'
-
-ROLE_NAME = 'role_1'
-
-ROUTER_CONFIG =
-    port: PORT
-
-    realms:
-        "#{REALM_URI}":
-            roles:
-                "#{ROLE_NAME}": {}
-
-    auth:
-        wampcra:
-            type: 'static'
-            users:
-                "#{VALID_AUTHID}":
-                    secret: VALID_KEY
-                    role: 'frontend'
 
 
 
@@ -50,7 +24,44 @@ ROUTER_CONFIG =
 
 
 
-###
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cfg = require('./router-config')
+
+ROUTER_CONFIG = Cfg.static
+REALM_URI =     Cfg.realm
+
+ROLE = Cfg.role
+
+VALID_AUTHID =  Cfg.valid_authid
+VALID_KEY =     Cfg.valid_key
+
+INVALID_AUTHID = 'david.hasselhoff'
+INVALID_KEY = 'xyz789'
+
+
+
+
+
+
+
+
+
+
+
+
+
 describe('Router:Static Authorization', ()->
 
     router = null
