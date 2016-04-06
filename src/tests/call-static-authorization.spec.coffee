@@ -100,7 +100,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
                 done()
             ).catch((err)->
                 expect(err.error).to.equal('wamp.error.no_such_registration')
@@ -129,7 +128,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
 
                 done()
             ).catch((err)->
@@ -177,7 +175,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
                 done()
             ).catch((err)->
                 expect(err.error).to.equal('wamp.error.no_such_registration')
@@ -225,7 +222,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
 
                 done()
             ).catch((err)->
@@ -268,7 +264,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
                 done()
             ).catch((err)->
                 expect(err.error).to.equal('wamp.error.no_such_registration')
@@ -308,7 +303,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
 
                 done()
             ).catch((err)->
@@ -340,7 +334,6 @@ describe('Router:Static Authorization CALL', ()->
                 # no result is expected, since the session is not actually
                 # registered
                 #
-                console.log('------------------ RPC', result)
 
                 done()
             ).catch((err)->

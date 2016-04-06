@@ -126,7 +126,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -160,7 +159,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -192,7 +190,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -227,7 +224,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')

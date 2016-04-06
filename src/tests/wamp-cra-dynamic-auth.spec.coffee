@@ -126,8 +126,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
-
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
 
@@ -150,7 +148,7 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             try
                 autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
             catch err
-                console.log('signing failed', err)
+                logger.error('signing failed', err)
                 throw err
 
         connection = new autobahn.Connection({
@@ -165,7 +163,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -198,7 +195,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -230,7 +226,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
