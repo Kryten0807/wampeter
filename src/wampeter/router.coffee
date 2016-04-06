@@ -85,7 +85,6 @@ class Router extends WebSocketServer
 
             session.on('close', (defer)=>
                 try
-                    logger.debug("removing & cleaning session from realm #{session.realm}")
                     @realm(session.realm).cleanup(session).removeSession(session)
                     defer.resolve()
                 catch err
