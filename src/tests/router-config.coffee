@@ -11,7 +11,7 @@ VALID_KEY = 'abc123'
 
 ROLE = 'role_1'
 
-authenticator = (realm, authid, details)-> { secret: VALID_KEY, role: 'frontend' }
+authenticator = (realm, authid, details)-> { secret: VALID_KEY, role: ROLE }
 
 
 
@@ -41,7 +41,7 @@ STATIC_CONFIG.auth =
         users:
             "#{VALID_AUTHID}":
                 secret: VALID_KEY
-                role: 'frontend'
+                role: ROLE
 
 
 DYNAMIC_CONFIG.auth =
