@@ -16,7 +16,7 @@ test:
 	@echo "************************"
 	@echo "* TEST LIBRARY         *"
 	@echo "************************"
-	@./node_modules/.bin/mocha --recursive test/*.spec.js
+	@./test.sh
 
 docs:
 	@echo "************************"
