@@ -155,12 +155,6 @@ describe('Router:Static Authorization', ()->
 
 
 
-
-
-
-
-
-
     it('should successfully call when call permitted', (done_func)->
         logger.debug('------------- in test method')
         done = D(done_func)
@@ -188,15 +182,8 @@ describe('Router:Static Authorization', ()->
                 expect(err.error).to.equal('wamp.error.no_such_registration')
                 done()
             ).done()
-
-
-
         )
     )
-
-
-
-
 
     it('should fail to call when call disallowed', (done_func)->
         logger.debug('------------- in test method')
@@ -226,9 +213,6 @@ describe('Router:Static Authorization', ()->
 
                 done()
             ).done()
-
-
-
         )
     )
 )
