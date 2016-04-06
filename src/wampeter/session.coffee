@@ -141,7 +141,12 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'AUTHENTICATE'
-                    @authenticator?.authenticate(message).then(()=>
+                    @authenticator?.authenticate(message).then((clientRole)=>
+
+                        # save the client role for future authentication
+                        #
+                        @clientRole = clientRole
+
                         # if no exception was thrown, then we authenticated
                         # successfully. Time to send the welcome message
                         #
