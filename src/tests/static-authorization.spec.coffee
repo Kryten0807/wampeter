@@ -313,4 +313,120 @@ describe('Router:Static Authorization', ()->
         )
     )
 
+
+
+
+    it('should successfully call when call permitted - non-matching items in config', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        config =
+            'com.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.something.*':
+                call: false
+                register: false
+                subscribe: false
+                publish: false
+
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+                done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.no_such_registration')
+                done()
+            ).done()
+        )
+    )
+
+    it('should fail to call when call disallowed - non-matching items in config', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        config =
+            'com.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+            'com.example.*':
+                call: false
+                register: false
+                subscribe: false
+                publish: false
+            'com.something.*':
+                call: false
+                register: false
+                subscribe: false
+                publish: false
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+
+                done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.not_authorized')
+
+                done()
+            ).done()
+        )
+    )
+
+
+    it('should fail to call when call disallowed - no matching rule', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        config =
+            'com.something.*':
+                call: true
+                register: false
+                subscribe: false
+                publish: false
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+
+                done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.not_authorized')
+
+                done()
+            ).done()
+        )
+    )
+
 )
