@@ -10,11 +10,17 @@ gulp.task('build', function () {
         .pipe(coffee({bare: false}))
         .pipe(gulp.dest('./lib'));
 
-    // build the test code
+    // build the Mocha test code
     //
     gulp.src('./src/tests/**/*.coffee')
         .pipe(coffee({bare: false}))
         .pipe(gulp.dest('./test'));
+
+    // build the Tape test code
+    //
+    gulp.src('./src/tape/**/*.coffee')
+        .pipe(coffee({bare: false}))
+        .pipe(gulp.dest('./tape'));
 });
 
 
