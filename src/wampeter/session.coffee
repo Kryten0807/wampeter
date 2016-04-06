@@ -346,7 +346,7 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'CALL'
-                    if @isAuthorized(message.procedure)
+                    if @isAuthorized(message.procedure, 'call')
                         q.fcall(()=>
                             defer = q.defer()
                             @emit('call', message.procedure, defer)
