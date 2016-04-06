@@ -17,8 +17,8 @@ class Router extends WebSocketServer
         # retrieve configuration and update with default values
         #
         @config = new CConf('router', [], {
-            'path'             : '/wampeter'
-            'autoCreateRealms' : true
+            path             : '/wampeter'
+            autoCreateRealms : true
         }).load(opts || {})
 
         # initialize the list of realms
