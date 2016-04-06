@@ -169,7 +169,7 @@ class Authenticator
     authenticate: (message)=>
         q.fcall(()=>
             if message.signature? and message.signature==@signature
-                @user.authid
+                @user.role ? null
             else
                 @user = null
                 throw new Error('wamp.error.not_authorized')
