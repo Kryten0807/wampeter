@@ -17,33 +17,15 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-BASE_URI = 'com.to.inge'
-REALM_URI = BASE_URI + '.world'
+Cfg = require('./router-config')
 
-VALID_AUTHID = 'nicolas.cage'
-VALID_KEY = 'abc123'
+ROUTER_CONFIG = Cfg.dynamic
+REALM_URI =     Cfg.realm
+VALID_AUTHID =  Cfg.valid_authid
+VALID_KEY =     Cfg.valid_key
 
 INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
-
-
-authenticator = (realm, authid, details)->
-    expect(realm).to.be.equal(REALM_URI)
-
-    { secret: VALID_KEY, role: 'frontend' }
-
-ROUTER_CONFIG =
-    port: 3000
-    auth:
-        wampcra:
-            type: 'dynamic'
-            authenticator: authenticator
-        # wampcra:
-        #     type: 'static'
-        #     users:
-        #         "#{VALID_AUTHID}":
-        #             secret: VALID_KEY
-        #             role: 'frontend'
 
 
 describe('Router:Dynamic WAMP-CRA Successes', ()->
@@ -52,13 +34,10 @@ describe('Router:Dynamic WAMP-CRA Successes', ()->
     connection = null
     session = null
 
-
     before((done_func)->
         done = D(done_func)
 
         router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm('com.to.inge.world')
 
         setTimeout(done, CLEANUP_DELAY)
     )
@@ -69,6 +48,7 @@ describe('Router:Dynamic WAMP-CRA Successes', ()->
         cleanup = ()-> router.close().then(done).catch(done).done()
         setTimeout(cleanup, CLEANUP_DELAY)
     )
+
 
     it('should establish a new session via static wamp-cra authentication', (done_func)->
         done = D(done_func)
@@ -114,8 +94,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
         router = wampeter.createRouter(ROUTER_CONFIG)
 
-        router.createRealm(REALM_URI)
-
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
 
@@ -148,8 +126,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
-
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
 
@@ -157,8 +133,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
-
 
 
     it('should fail to establish a new session - invalid auth ID & secret', (done_func)->
@@ -174,7 +148,7 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
             try
                 autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
             catch err
-                console.log('signing failed', err)
+                logger.error('signing failed', err)
                 throw err
 
         connection = new autobahn.Connection({
@@ -189,7 +163,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -198,9 +171,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
-
-
 
 
     it('should fail to establish a new session - invalid challenge', (done_func)->
@@ -225,20 +195,18 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
 
             done()
 
-
         connection.open()
     )
 
+
     it('should fail to establish a new session - invalid auth ID', (done_func)->
         done = D(done_func)
-
 
         onchallenge = (session, method, extra)->
 
@@ -258,7 +226,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         })
 
         connection.onclose = (reason, message)->
-            console.log('------------------------ onclose', message)
 
             expect(message).to.have.property('reason')
             expect(message.reason).to.equal('wamp.error.not_authorized')
@@ -267,5 +234,4 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
 )

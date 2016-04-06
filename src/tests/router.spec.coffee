@@ -16,19 +16,38 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
+
+Cfg = require('./router-config')
+
+ROUTER_CONFIG = Cfg.static
+REALM_URI =     Cfg.realm
+
+VALID_AUTHID =  Cfg.valid_authid
+VALID_KEY =     Cfg.valid_key
+
+INVALID_AUTHID = 'david.hasselhoff'
+INVALID_KEY = 'xyz789'
+
+
+# delete the authentication config - we're not testing that in this suite
+#
+delete(ROUTER_CONFIG.auth)
+
+
 describe('Router#constructor', ()->
 
     it('should instantiate', (done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
+
         expect(router).to.be.an.instanceof(wampeter.Router)
         expect(router.roles).to.have.property('broker')
         expect(router.roles).to.have.property('dealer')
         router.close().then(done).catch(done).done()
     )
-
 )
+
 
 describe('Router:Session', ()->
 
@@ -39,7 +58,7 @@ describe('Router:Session', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
@@ -52,8 +71,6 @@ describe('Router:Session', ()->
 
     it('should establish a new session', (done_func)->
         done = D(done_func)
-
-        router.createRealm('com.to.inge.world')
 
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
@@ -93,7 +110,7 @@ describe('Router:Publish/Subscribe', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()->
             connection = new autobahn.Connection({
@@ -184,7 +201,7 @@ describe('Router:Remote Procedures', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()->
             connection = new autobahn.Connection({

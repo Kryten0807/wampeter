@@ -10,7 +10,7 @@ _             = require('lodash')
 Authenticator = require('./authenticator')
 
 class Session extends EventEmitter
-    constructor: (socket, supportedRoles, authConfig = null)->
+    constructor: (socket, supportedRoles, authenticationConfig = null, realms = null)->
 
         if not (socket instanceof WebSocket)
             throw new TypeError('wamp.error.invalid_socket')
@@ -18,10 +18,14 @@ class Session extends EventEmitter
         if not (_.isPlainObject(supportedRoles))
             throw new TypeError('wamp.error.invalid_roles')
 
-        # create the authenticator - this function will return null if no
-        # authenticator is require (ie. if `authConfig` is null)
+        # save the realms configuration
         #
-        @authenticator = Authenticator(@, authConfig)
+        @realms = realms
+
+        # create the authenticator - this function will return null if no
+        # authenticator is required (ie. if `authenticationConfig` is null)
+        #
+        @authenticator = Authenticator(@, authenticationConfig)
 
         EventEmitter.call(@)
 
@@ -47,6 +51,64 @@ class Session extends EventEmitter
         @socket = socket
         @roles = supportedRoles
 
+        @clientRole = null
+
+
+    isWildcardMatch: (pattern, string)->
+        # the pattern may be a partial URI, so replace any '.' characters with
+        # '\.'
+        #
+        newPattern = pattern.replace('.', '\.')
+
+        # create a new regex for the pattern
+        #
+        regex = new RegExp("^#{newPattern.split('*').join('.*')}$")
+
+        logger.debug("---- regex conversion #{pattern}", regex)
+
+        regex.test(string)
+
+    isAuthorized: (uri, type)=>
+
+        # do we have an authenticator? if not, then there's no need to check for
+        # authorization since this is a wide-open router
+        #
+        if not @authenticator?
+            return true
+
+        # find the roles for the current realm
+        #
+        roles = @realms[@realm]?.roles
+
+        # find the user role configuration
+        #
+        details = roles?[@clientRole]
+
+        # do we have any details? if not, then throw a "no such role" error
+        #
+        if not details?
+            throw new TypeError('wamp.error.no_such_role')
+
+
+        matches = []
+
+        _.forEach(details, (value, pattern)=>
+            # if the URI matches the pattern, then add the 'call' property flag
+            # to the list of matches
+            #
+            if @isWildcardMatch(pattern, uri)
+                logger.debug("---- pattern match found", value)
+                matches.push(value[type] ? false)
+        )
+
+        # is the list of matches empty? if so, add a single false value
+        #
+        if matches.length==0
+            matches.push(false)
+
+        # reduce the list of matches to a single boolean value & return it
+        #
+        _.reduce(matches, ((result, m)-> result and m), true)
 
 
     send: (type, opts)=>
@@ -90,57 +152,66 @@ class Session extends EventEmitter
         .then((message)=>
             logger.debug('parsing message', message)
             switch message.type
+
                 when 'HELLO'
                     # set an ID for the session
                     #
                     @id = randomid()
 
-                    # do we have an authenticator? if not, then  process the
-                    # HELLO message without challenge/response; otherwise, issue
-                    # the CHALLENGE message and wait for a response
+                    # start a promise to sort out the remainder of the message
                     #
-                    if not @authenticator?
-                        q.fcall(()=>
-                            @realm = message.realm
-
-                            defer = q.defer()
-                            @emit('attach', message.realm, defer)
-                            defer.promise
-                        ).then(()=>
-                            @send('WELCOME', {
-                                session:
-                                    id: @id
-                                details:
-                                    roles: @roles
-                            })
-                        ).then(()->
-                            logger.debug('attached session to realm', message.realm)
-                        ).catch((err)=>
-                            logger.error('cannot establish session', err.stack)
-                            @send('ABORT', {
-                                details:
-                                    message: 'Cannot establish session!'
-                                reason: err.message
-                            })
-                        ).done()
-
-                    else
-                        # send the CHALLENGE message
+                    q.fcall(()=>
+                        # initialize the realm associated with this session
                         #
-                        @authenticator.challenge(message).then((challengeMessage)=>
-                            logger.debug('sending CHALLENGE message', challengeMessage)
-                            @send('CHALLENGE', challengeMessage)
-                        ).catch((err)=>
-                            logger.error('cannot send CHALLENGE message', err)
-                            @send('ABORT', {
-                                details:
-                                    message: 'Cannot establish session!'
-                                reason: err.message
+                        @realm = message.realm
+
+                        defer = q.defer()
+                        @emit('attach', message.realm, defer)
+                        defer.promise
+                    ).then(()=>
+                        # time to send the next message - do we need to
+                        # authenticate?
+                        #
+                        if not @authenticator?
+                            # no authentication - send welcome message
+                            #
+                            @send('WELCOME', {
+                                session: {id: @id},
+                                details: {roles: @roles}
                             })
-                        ).done()
+                        else
+                            # need to authenticate - send the challenge message
+                            #
+                            @authenticator.challenge(message).then((challengeMessage)=>
+                                logger.debug("------------------ challenge message", challengeMessage)
+                                @send('CHALLENGE', challengeMessage)
+                            ).catch((err)=>
+                                logger.error('cannot send CHALLENGE message', err)
+                                @send('ABORT', {
+                                    details:
+                                        message: 'Cannot establish session!'
+                                    reason: err.message
+                                })
+                            ).done()
+                    ).catch((err)=>
+                        logger.error('cannot establish session', err.stack)
+                        @send('ABORT', {
+                            details:
+                                message: 'Cannot establish session!'
+                            reason: err.message
+                        })
+                    ).done()
 
                 when 'AUTHENTICATE'
-                    @authenticator?.authenticate(message).then((user)=>
+                    @authenticator?.authenticate(message).then((clientRole)=>
+
+                        # save the client role for future authentication
+                        #
+                        @clientRole = clientRole
+
+                        # if no exception was thrown, then we authenticated
+                        # successfully. Time to send the welcome message
+                        #
                         @send('WELCOME', {
                             session:
                                 id: @id
@@ -148,6 +219,9 @@ class Session extends EventEmitter
                                 roles: @roles
                         })
                     ).catch((err)=>
+                        # unable to authenticate - log the error and send an
+                        # abort message to the client
+                        #
                         logger.error('cannot authenticate', err)
                         @send('ABORT', {
                             details:
@@ -160,23 +234,28 @@ class Session extends EventEmitter
                     @close(1009, 'wamp.error.close_normal')
 
                 when 'SUBSCRIBE'
-                    q.fcall(()=>
-                        logger.debug('try to subscribe to topic:', message.topic)
-                        defer = q.defer()
-                        @emit('subscribe', message.topic, defer)
-                        defer.promise
-                    ).then((subscriptionId)=>
-                        @send('SUBSCRIBED', {
-                            subscribe:
-                                request:
-                                    id: message.request.id
-                            subscription:
-                                id: subscriptionId
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot subscribe to topic', @realm, message.topic, err.stack)
-                        @error('SUBSCRIBE', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.topic, 'subscribe')
+                        q.fcall(()=>
+                            logger.debug('try to subscribe to topic:', message.topic)
+                            defer = q.defer()
+                            @emit('subscribe', message.topic, defer)
+                            defer.promise
+                        ).then((subscriptionId)=>
+                            @send('SUBSCRIBED', {
+                                subscribe:
+                                    request:
+                                        id: message.request.id
+                                subscription:
+                                    id: subscriptionId
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot subscribe to topic', @realm, message.topic, err.stack)
+                            @error('SUBSCRIBE', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('SUBSCRIBE', message.request.id, new TypeError('wamp.error.not_authorized'))
+
 
                 when 'UNSUBSCRIBE'
                     q.fcall(()=>
@@ -195,65 +274,83 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'PUBLISH'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('publish', message.topic, defer)
-                        defer.promise
-                    ).then((topic)=>
-                        publicationId = randomid()
+                    if @isAuthorized(message.topic, 'publish')
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('publish', message.topic, defer)
+                            defer.promise
+                        ).then((topic)=>
+                            logger.debug('--------------- publish got promised topic', topic)
 
-                        if message.options and message.options.acknowledge
-                            @send('PUBLISHED', {
-                                publish:
-                                    request:
-                                        id: message.request.id
-                                publication:
-                                    id: publicationId
-                            })
+                            # create a queue in which to save the publication
+                            # promises
+                            #
+                            queue = []
 
-                        queue = []
-                        _.forEach(topic.sessions, (session)->
-                            event = session.send('EVENT', {
-                                subscribed:
-                                    subscription:
-                                        id: topic.id
-                                published:
+                            publicationId = randomid()
+
+                            if message.options? and message.options.acknowledge
+                                @send('PUBLISHED', {
+                                    publish:
+                                        request:
+                                            id: message.request.id
                                     publication:
                                         id: publicationId
-                                details: {}
-                                publish:
-                                    args: message.args
-                                    kwargs: message.kwargs
-                            })
+                                })
 
-                            queue.push(event)
-                        )
+                            # do we have a topic? if so, build the queue of promises
+                            #
+                            if topic?
+                                _.forEach(topic.sessions, (session)->
+                                    event = session.send('EVENT', {
+                                        subscribed:
+                                            subscription:
+                                                id: topic.id
+                                        published:
+                                            publication:
+                                                id: publicationId
+                                        details: {}
+                                        publish:
+                                            args: message.args
+                                            kwargs: message.kwargs
+                                    })
 
-                        return q.all(queue)
-                    ).then(()->
-                        logger.info('published event to topic', message.topic)
-                    ).catch((err)=>
-                        logger.error('cannot publish event to topic', message.topic, err.stack)
-                        @error('PUBLISH', message.request.id, err)
-                    ).done()
+                                    queue.push(event)
+                                )
+
+                            return q.all(queue)
+                        ).then(()->
+                            logger.info('published event to topic', message.topic)
+                        ).catch((err)=>
+                            logger.error('cannot publish event to topic', message.topic, err.stack)
+                            @error('PUBLISH', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to publish', @clientRole, message.topic)
+                        if message.options.acknowledge
+                            @error('PUBLISH', message.request.id, new TypeError('wamp.error.not_authorized'))
 
                 when 'REGISTER'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('register', message.procedure, defer)
-                        defer.promise
-                    ).then((registrationId)=>
-                        @send('REGISTERED', {
-                            register:
-                                request:
-                                    id: message.request.id
-                            registration:
-                                id: registrationId
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot register remote procedure', message.procedure, err.stack)
-                        @error('REGISTER', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.procedure, 'register')
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('register', message.procedure, defer)
+                            defer.promise
+                        ).then((registrationId)=>
+                            @send('REGISTERED', {
+                                register:
+                                    request:
+                                        id: message.request.id
+                                registration:
+                                    id: registrationId
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot register remote procedure', message.procedure, err.stack)
+                            @error('REGISTER', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('REGISTER', message.request.id, new TypeError('wamp.error.not_authorized'))
 
                 when 'UNREGISTER'
                     q.fcall(()=>
@@ -272,27 +369,32 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'CALL'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('call', message.procedure, defer)
-                        defer.promise
-                    ).then((procedure)=>
-                        invocationId = procedure.invoke(message.request.id, @)
-                        procedure.callee.send('INVOCATION', {
-                            request:
-                                id: invocationId
-                            registered:
-                                registration:
-                                    id: procedure.id
-                            details: {}
-                            call:
-                                args: message.args
-                                kwargs: message.kwargs
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot call remote procedure', message.procedure, err.stack)
-                        @error('CALL', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.procedure, 'call')
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('call', message.procedure, defer)
+                            defer.promise
+                        ).then((procedure)=>
+                            invocationId = procedure.invoke(message.request.id, @)
+                            procedure.callee.send('INVOCATION', {
+                                request:
+                                    id: invocationId
+                                registered:
+                                    registration:
+                                        id: procedure.id
+                                details: {}
+                                call:
+                                    args: message.args
+                                    kwargs: message.kwargs
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot call remote procedure', message.procedure, err.stack)
+                            @error('CALL', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('CALL', message.request.id, new TypeError('wamp.error.not_authorized'))
+
 
                 when 'YIELD'
                     q.fcall(()=>

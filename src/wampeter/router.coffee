@@ -14,15 +14,20 @@ _               = require('lodash')
 
 class Router extends WebSocketServer
     constructor: (opts)->
+        # retrieve configuration and update with default values
+        #
         @config = new CConf('router', [], {
-            'path'             : '/wampeter'
-            'autoCreateRealms' : true
+            path             : '/wampeter'
+            autoCreateRealms : true
+            realms           : {}
         }).load(opts || {})
 
+        # initialize the list of realms
+        #
         @realms = {}
 
-        logger.info("router option for auto-creating realms is #{if @config.getValue('autoCreateRealms') then 'set' else 'not set'}")
-
+        # configure the HTTP server if it's not already set
+        #
         @server = @config.getValue('httpServer')
         if not @server?
             @server = http.createServer((req, res)->
@@ -30,16 +35,26 @@ class Router extends WebSocketServer
                 res.end('This is the Wampeter WAMP transport. Please connect over WebSocket!')
             )
 
+        # set up the error handler for the HTTP server
+        #
         @server.on('error', (err)->
             logger.error('httpServer error:', err.stack)
         )
 
+        # configure the listening port
+        #
         port = @config.getValue('port')
         if port?
             @server.listen(port, ()->
                 logger.info("bound and listening at: #{port}")
             )
 
+        # configure the realms (if any)
+        #
+        _.forEach(@config.getValue('realms'), (values, realm)=> @createRealm(realm))
+
+        # initialize the WebSocketServer
+        #
         WebSocketServer.call(@, {
             'server' : @server
             'path'   : @config.getValue('path')
@@ -52,7 +67,12 @@ class Router extends WebSocketServer
         @on('connection', (socket)=>
             logger.info('incoming socket connection')
 
-            session = new Session(socket, @roles, @config.getValue('auth') ? null)
+            session = new Session(
+                socket,
+                @roles,
+                @config.getValue('auth') ? null,
+                @config.getValue('realms') ? null
+            )
 
             session.on('attach', (realm, defer)=>
                 try
@@ -65,7 +85,6 @@ class Router extends WebSocketServer
 
             session.on('close', (defer)=>
                 try
-                    logger.debug("removing & cleaning session from realm #{session.realm}")
                     @realm(session.realm).cleanup(session).removeSession(session)
                     defer.resolve()
                 catch err
