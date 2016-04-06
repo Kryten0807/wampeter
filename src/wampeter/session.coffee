@@ -101,6 +101,11 @@ class Session extends EventEmitter
                 matches.push(value.call ? false)
         )
 
+        # is the list of matches empty? if so, add a single false value
+        #
+        if matches.length==0
+            matches.push(false)
+
         # reduce the list of matches to a single boolean value & return it
         #
         _.reduce(matches, ((result, m)-> result and m), true)
