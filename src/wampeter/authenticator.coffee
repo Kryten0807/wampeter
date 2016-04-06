@@ -81,31 +81,36 @@ class Authenticator
                 # set up the challenge generator method
                 #
                 @generateChallenge = (message)=>
+                    logger.debug("-------------- STATIC generating challenge", message)
                     # extract the user ID from the message
                     #
-                    userID = message?.details?.authid
+                    authid = message?.details?.authid
 
-                    # find the user
+                    if authid?
+                        # find the user
+                        #
+                        user = @users[authid]
+
+                        if user?
+                            user.authid = authid
+
+                            challenge = JSON.stringify({
+                                authid: user.authid
+                                authrole: user.role
+                                authmethod: 'wampcra'
+                                authprovider: 'static'
+                                session: @session.id
+                                nonce: util.randomid()
+                                timestamp: Math.floor(Date.now()/1000)
+                            })
+
+                            return [challenge, user]
+
+                    # if we get here, then we were not able to authorize
                     #
-                    user = @users[userID]
+                    throw new Error('wamp.error.not_authorized')
 
-                    if not user?
-                        user = null
-                        throw new Error('wamp.error.not_authorized')
 
-                    user.authid = userID
-
-                    challenge = JSON.stringify({
-                        authid: user.authid
-                        authrole: user.role
-                        authmethod: 'wampcra'
-                        authprovider: 'static'
-                        session: @session.id
-                        nonce: util.randomid()
-                        timestamp: Math.floor(Date.now()/1000)
-                    })
-
-                    [challenge, user]
 
             else if config.wampcra.type=='dynamic'
                 # handle DYNAMIC authentication
@@ -118,7 +123,7 @@ class Authenticator
                 # set up the challenge generator method
                 #
                 @generateChallenge = (message)=>
-                    logger.debug("----------------- generate challenge", message)
+                    logger.debug("-------------- DYNAMIC generating challenge", message)
 
                     realm = message?.realm
                     authid = message?.details?.authid
@@ -128,23 +133,25 @@ class Authenticator
                     #
                     credentials = config.wampcra.authenticator(realm, authid, details)
 
-                    if not credentials?
-                        credentials = null
-                        throw new Error('wamp.error.not_authorized')
+                    if credentials?
+                        credentials.authid = authid
 
-                    credentials.authid = authid
+                        challenge = JSON.stringify({
+                            authid: authid
+                            authrole: credentials.role
+                            authmethod: 'wampcra'
+                            authprovider: 'dynamic'
+                            session: @session.id
+                            nonce: util.randomid()
+                            timestamp: Math.floor(Date.now()/1000)
+                        })
 
-                    challenge = JSON.stringify({
-                        authid: authid
-                        authrole: credentials.role
-                        authmethod: 'wampcra'
-                        authprovider: 'dynamic'
-                        session: @session.id
-                        nonce: util.randomid()
-                        timestamp: Math.floor(Date.now()/1000)
-                    })
+                        return [challenge, credentials]
 
-                    [challenge, credentials]
+                    # if we get here, then we were not able to retrieve user
+                    # credentials
+                    #
+                    throw new Error('wamp.error.not_authorized')
 
             else
                 # is the type static? if so, then carry on
@@ -164,8 +171,6 @@ class Authenticator
 
     authenticate: (message)=>
         q.fcall(()=>
-            logger.debug('----------------------- dynamic auth underway', message)
-
             logger.debug('authenticating', message)
 
             logger.debug('----- auth sig', message.signature)
@@ -212,11 +217,11 @@ class Authenticator
 
             # get the details from the message
             #
-            userID = message.details.authid
+            authid = message.details.authid
 
-            logger.debug("-------------- in promise #{userID}")
+            logger.debug("-------------- in promise #{authid}")
 
-            if not userID?
+            if not authid?
                 throw new Error('no user provided')
 
             [challenge, @user] = @generateChallenge(message)
