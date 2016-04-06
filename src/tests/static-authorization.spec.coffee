@@ -123,8 +123,6 @@ describe('Router:Static Authorization', ()->
         router = wampeter.createRouter(cfg)
 
         onchallenge = (session, method, extra)->
-            console.log('++++++++++ onchallenge session', session)
-            console.log('++++++++++ onchallenge extra', extra)
             expect(method).to.equal('wampcra')
 
             # respond to the challenge
@@ -142,16 +140,11 @@ describe('Router:Static Authorization', ()->
 
 
         connection.onopen = (session)->
-            logger.debug('------------- onopen', session)
             expect(session).to.be.an.instanceof(autobahn.Session)
             expect(session.isOpen).to.be.true
 
-            logger.debug('------------- onopen - resolving deferred')
-
             setTimeout((()->deferred.resolve(session)), CLEANUP_DELAY)
-            # deferred.resolve(s)
 
-        logger.debug('------------- opening connection')
         connection.open()
 
         deferred.promise
@@ -186,8 +179,6 @@ describe('Router:Static Authorization', ()->
 
         connect(config)
         .then((session)->
-            logger.debug('------------- in connect deferred', session)
-
             # attempt to call a function
             #
             session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
