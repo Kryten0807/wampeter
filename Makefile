@@ -44,5 +44,6 @@ tidy:
 	@echo "***********************"
 	-@rm -rf ./lib/*
 	-@rm -rf ./test/*
+	-@rm -rf ./tape/*
 
 .PHONY: all install test docs
