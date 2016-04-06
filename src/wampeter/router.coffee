@@ -26,8 +26,6 @@ class Router extends WebSocketServer
         #
         @realms = {}
 
-        logger.info("router option for auto-creating realms is #{if @config.getValue('autoCreateRealms') then 'set' else 'not set'}")
-
         # configure the HTTP server if it's not already set
         #
         @server = @config.getValue('httpServer')
