@@ -16,6 +16,9 @@ chai.use(spies).use(promised)
 
 CLEANUP_DELAY = 500
 
+PORT = 3000
+URL = "ws://localhost:#{PORT}"
+
 BASE_URI = 'com.to.inge'
 REALM_URI = BASE_URI + '.world'
 
@@ -25,14 +28,20 @@ VALID_KEY = 'abc123'
 ROLE_NAME = 'role_1'
 
 ROUTER_CONFIG =
-    port: 3000
+    port: PORT
+
+    realms:
+        "#{REALM_URI}":
+            roles:
+                "#{ROLE_NAME}": {}
+
     auth:
         wampcra:
             type: 'static'
             users:
                 "#{VALID_AUTHID}":
                     secret: VALID_KEY
-                    role: ROLE_NAME
+                    role: 'frontend'
 
 
 
