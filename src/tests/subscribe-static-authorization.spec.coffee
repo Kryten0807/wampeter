@@ -18,26 +18,6 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Cfg = require('./router-config')
 
 ROUTER_CONFIG = Cfg.static
@@ -52,59 +32,10 @@ INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 describe('Router:Static Authorization CALL', ()->
 
     router = null
     connection = null
-    # session = null
-
-    ###
-    before((done_func)->
-        done = D(done_func)
-
-        router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm(REALM_URI)
-
-        onchallenge = (session, method, extra)->
-
-            expect(method).to.equal('wampcra')
-
-            # respond to the challenge
-            #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
-
-        connection = new autobahn.Connection({
-            realm: REALM_URI
-            url: 'ws://localhost:3000/wampeter'
-
-            authmethods: ['wampcra']
-            authid: VALID_AUTHID
-            onchallenge: onchallenge
-        })
-
-
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
-            setTimeout(done, CLEANUP_DELAY)
-
-        connection.open()
-    )
-    ###
 
     afterEach((done_func)->
         done = D(done_func)
@@ -112,7 +43,6 @@ describe('Router:Static Authorization CALL', ()->
         cleanup = ()-> router.close().then(done).catch(done).done()
         setTimeout(cleanup, CLEANUP_DELAY)
     )
-
 
     connect = (authConfig)->
         deferred = Q.defer()
@@ -148,11 +78,6 @@ describe('Router:Static Authorization CALL', ()->
         connection.open()
 
         deferred.promise
-
-
-
-
-
 
 
     it('should successfully subscribe when permitted - simple config', (done_func)->
@@ -212,12 +137,6 @@ describe('Router:Static Authorization CALL', ()->
             done()
         ).done()
     )
-
-
-
-
-
-
 
 
     it('should successfully subscribe when permitted - complex config', (done_func)->
@@ -309,14 +228,6 @@ describe('Router:Static Authorization CALL', ()->
     )
 
 
-
-
-
-
-
-
-
-
     it('should successfully subscribe when permitted - non-matching items in config', (done_func)->
         done = D(done_func)
 
@@ -354,7 +265,6 @@ describe('Router:Static Authorization CALL', ()->
             done()
         ).done()
     )
-
 
 
     it('should fail to subscribe when disallowed - non-matching items in config', (done_func)->
@@ -397,12 +307,6 @@ describe('Router:Static Authorization CALL', ()->
     )
 
 
-
-
-
-
-
-
     it('should fail to subscribe when disallowed - no matching rule', (done_func)->
         done = D(done_func)
 
@@ -431,5 +335,4 @@ describe('Router:Static Authorization CALL', ()->
             done()
         ).done()
     )
-
 )
