@@ -195,8 +195,37 @@ describe('Router:Static Authorization', ()->
     )
 
 
+
+
+
+    it('should fail to call when call disallowed', (done_func)->
+        logger.debug('------------- in test method')
+        done = D(done_func)
+
+        config =
+            '*':
+                call: false
+                register: false
+                subscribe: false
+                publish: false
+
+        connect(config)
+        .then((session)->
+            # attempt to call a function
+            #
+            session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
+            .then((result)->
+                # no result is expected, since the session is not actually
+                # registered
+                #
+                console.log('------------------ RPC', result)
+
                 done()
-            ).catch((err)-> done(new Error(err))).done()
+            ).catch((err)->
+                expect(err.error).to.equal('wamp.error.not_authorized')
+
+                done()
+            ).done()
 
 
 
