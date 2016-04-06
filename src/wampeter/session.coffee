@@ -341,27 +341,32 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'CALL'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('call', message.procedure, defer)
-                        defer.promise
-                    ).then((procedure)=>
-                        invocationId = procedure.invoke(message.request.id, @)
-                        procedure.callee.send('INVOCATION', {
-                            request:
-                                id: invocationId
-                            registered:
-                                registration:
-                                    id: procedure.id
-                            details: {}
-                            call:
-                                args: message.args
-                                kwargs: message.kwargs
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot call remote procedure', message.procedure, err.stack)
-                        @error('CALL', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.procedure)
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('call', message.procedure, defer)
+                            defer.promise
+                        ).then((procedure)=>
+                            invocationId = procedure.invoke(message.request.id, @)
+                            procedure.callee.send('INVOCATION', {
+                                request:
+                                    id: invocationId
+                                registered:
+                                    registration:
+                                        id: procedure.id
+                                details: {}
+                                call:
+                                    args: message.args
+                                    kwargs: message.kwargs
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot call remote procedure', message.procedure, err.stack)
+                            @error('CALL', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('CALL', message.request.id, new TypeError('wamp.error.not_authorized'))
+
 
                 when 'YIELD'
                     q.fcall(()=>
