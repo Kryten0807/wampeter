@@ -155,7 +155,7 @@ describe('Router:Static Authorization', ()->
 
 
 
-    it('should successfully call when call permitted', (done_func)->
+    it('should successfully call when call permitted - simple config', (done_func)->
         logger.debug('------------- in test method')
         done = D(done_func)
 
@@ -185,7 +185,7 @@ describe('Router:Static Authorization', ()->
         )
     )
 
-    it('should fail to call when call disallowed', (done_func)->
+    it('should fail to call when call disallowed - simple config', (done_func)->
         logger.debug('------------- in test method')
         done = D(done_func)
 
