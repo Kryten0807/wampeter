@@ -89,7 +89,8 @@ describe('Router#constructor', ()->
     it('should instantiate', (done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
+
         expect(router).to.be.an.instanceof(wampeter.Router)
         expect(router.roles).to.have.property('broker')
         expect(router.roles).to.have.property('dealer')
