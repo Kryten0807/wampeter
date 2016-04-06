@@ -58,6 +58,17 @@ ROUTER_CONFIG =
             type: 'dynamic'
             authenticator: authenticator
 
+
+
+
+
+
+
+
+
+
+
+
 describe('Router:Dynamic WAMP-CRA Successes', ()->
 
     router = null
