@@ -183,8 +183,22 @@ describe('Router:Static Authorization', ()->
             #
             session.call('com.example.authtest', ['hello inge!'], {to: 'inge'})
             .then((result)->
-
+                # no result is expected, since the session is not actually
+                # registered
+                #
                 console.log('------------------ RPC', result)
+
+                done()
+            ).then(()-> router.close())
+            .catch((err)->
+                expect(err.error).to.equal('wamp.error.no_such_registration')
+                done()
+            ).done()
+
+
+
+        )
+    )
 
 
                 done()
