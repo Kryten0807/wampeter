@@ -183,9 +183,7 @@ describe('Router:Static Authorization', ()->
                 # registered
                 #
                 console.log('------------------ RPC', result)
-
                 done()
-            ).then(()-> router.close())
             .catch((err)->
                 expect(err.error).to.equal('wamp.error.no_such_registration')
                 done()
