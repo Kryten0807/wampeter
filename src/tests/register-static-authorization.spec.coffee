@@ -18,26 +18,6 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Cfg = require('./router-config')
 
 ROUTER_CONFIG = Cfg.static
@@ -52,59 +32,11 @@ INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 describe('Router:Static Authorization REGISTER', ()->
 
     router = null
     connection = null
-    # session = null
 
-    ###
-    before((done_func)->
-        done = D(done_func)
-
-        router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm(REALM_URI)
-
-        onchallenge = (session, method, extra)->
-
-            expect(method).to.equal('wampcra')
-
-            # respond to the challenge
-            #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
-
-        connection = new autobahn.Connection({
-            realm: REALM_URI
-            url: 'ws://localhost:3000/wampeter'
-
-            authmethods: ['wampcra']
-            authid: VALID_AUTHID
-            onchallenge: onchallenge
-        })
-
-
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
-            setTimeout(done, CLEANUP_DELAY)
-
-        connection.open()
-    )
-    ###
 
     afterEach((done_func)->
         done = D(done_func)
@@ -138,7 +70,6 @@ describe('Router:Static Authorization REGISTER', ()->
             onchallenge: onchallenge
         })
 
-
         connection.onopen = (session)->
             expect(session).to.be.an.instanceof(autobahn.Session)
             expect(session.isOpen).to.be.true
@@ -148,10 +79,6 @@ describe('Router:Static Authorization REGISTER', ()->
         connection.open()
 
         deferred.promise
-
-
-
-
 
 
     it('should successfully register when permitted - simple config', (done_func)->
@@ -186,6 +113,7 @@ describe('Router:Static Authorization REGISTER', ()->
         ).done()
     )
 
+
     it('should fail to register when disallowed - simple config', (done_func)->
         logger.debug('------------- in test method')
         done = D(done_func)
@@ -218,11 +146,6 @@ describe('Router:Static Authorization REGISTER', ()->
             done()
         ).done()
     )
-
-
-
-
-
 
 
     it('should successfully register when permitted - complex config', (done_func)->
@@ -271,6 +194,7 @@ describe('Router:Static Authorization REGISTER', ()->
             done()
         ).done()
     )
+
 
     it('should fail to register when disallowed - complex config', (done_func)->
         logger.debug('------------- in test method')
@@ -321,9 +245,6 @@ describe('Router:Static Authorization REGISTER', ()->
     )
 
 
-
-
-
     it('should successfully register when permitted - non-matching items in config', (done_func)->
         logger.debug('------------- in test method')
         done = D(done_func)
@@ -365,6 +286,7 @@ describe('Router:Static Authorization REGISTER', ()->
             done()
         ).done()
     )
+
 
     it('should fail to register when disallowed - non-matching items in config', (done_func)->
         logger.debug('------------- in test method')
@@ -442,6 +364,4 @@ describe('Router:Static Authorization REGISTER', ()->
             done()
         ).done()
     )
-
-
 )
