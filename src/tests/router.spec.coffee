@@ -108,7 +108,7 @@ describe('Router:Session', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
@@ -162,7 +162,7 @@ describe('Router:Publish/Subscribe', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()->
             connection = new autobahn.Connection({
@@ -253,7 +253,7 @@ describe('Router:Remote Procedures', ()->
     before((done_func)->
         done = D(done_func)
 
-        router = wampeter.createRouter({port: 3000})
+        router = wampeter.createRouter(ROUTER_CONFIG)
 
         setTimeout((()->
             connection = new autobahn.Connection({
