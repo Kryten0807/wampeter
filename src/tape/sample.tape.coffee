@@ -10,8 +10,8 @@ test('A passing test', (assert)->
 
 
 test('Assertions with tape.', (assert)->
-  const expected = 'something to test'
-  const actual = 'sonething to test'
+  expected = 'something to test'
+  actual = 'sonething to test'
 
   assert.equal(actual, expected,
     'Given two mismatched values, .equal() should produce a nice bug report')
