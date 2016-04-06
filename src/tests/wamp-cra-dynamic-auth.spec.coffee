@@ -28,13 +28,11 @@ INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
 
 
-
 describe('Router:Dynamic WAMP-CRA Successes', ()->
 
     router = null
     connection = null
     session = null
-
 
     before((done_func)->
         done = D(done_func)
@@ -50,6 +48,7 @@ describe('Router:Dynamic WAMP-CRA Successes', ()->
         cleanup = ()-> router.close().then(done).catch(done).done()
         setTimeout(cleanup, CLEANUP_DELAY)
     )
+
 
     it('should establish a new session via static wamp-cra authentication', (done_func)->
         done = D(done_func)
@@ -138,8 +137,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
     )
 
 
-
-
     it('should fail to establish a new session - invalid auth ID & secret', (done_func)->
         done = D(done_func)
 
@@ -179,9 +176,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
     )
 
 
-
-
-
     it('should fail to establish a new session - invalid challenge', (done_func)->
         done = D(done_func)
 
@@ -211,13 +205,12 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
             done()
 
-
         connection.open()
     )
 
+
     it('should fail to establish a new session - invalid auth ID', (done_func)->
         done = D(done_func)
-
 
         onchallenge = (session, method, extra)->
 
@@ -246,5 +239,4 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
 )
