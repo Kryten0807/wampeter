@@ -17,8 +17,6 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-
-
 Cfg = require('./router-config')
 
 ROUTER_CONFIG = Cfg.static
@@ -29,16 +27,6 @@ VALID_KEY =     Cfg.valid_key
 
 INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
-
-
-
-
-
-
-
-
-
-
 
 
 describe('Router:Static WAMP-CRA Successes', ()->
@@ -61,6 +49,7 @@ describe('Router:Static WAMP-CRA Successes', ()->
         cleanup = ()-> router.close().then(done).catch(done).done()
         setTimeout(cleanup, CLEANUP_DELAY)
     )
+
 
     it('should establish a new session via static wamp-cra authentication', (done_func)->
         done = D(done_func)
@@ -115,6 +104,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
         setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
     )
 
+
     it('should fail to establish a new session - invalid key', (done_func)->
         done = D(done_func)
 
@@ -145,8 +135,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
-
 
 
     it('should fail to establish a new session - invalid auth ID & secret', (done_func)->
@@ -183,9 +171,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
     )
 
 
-
-
-
     it('should fail to establish a new session - invalid challenge', (done_func)->
         done = D(done_func)
 
@@ -217,8 +202,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
-
 
 
     it('should fail to establish a new session - invalid auth ID', (done_func)->
@@ -253,5 +236,4 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
         connection.open()
     )
-
 )
