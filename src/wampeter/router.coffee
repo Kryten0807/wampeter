@@ -51,6 +51,14 @@ class Router extends WebSocketServer
                 logger.info("bound and listening at: #{port}")
             )
 
+        # configure the realms (if any)
+        #
+        logger.debug("--------------- configuring realms", @config.getValue('realms'))
+        _.forEach(@config.getValue('realms'), (values, realm)=> @createRealm(realm))
+        logger.debug("--------------- configuring realms", @realms)
+
+        # initialize the WebSocketServer
+        #
         WebSocketServer.call(@, {
             'server' : @server
             'path'   : @config.getValue('path')
