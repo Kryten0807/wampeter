@@ -67,7 +67,12 @@ class Router extends WebSocketServer
         @on('connection', (socket)=>
             logger.info('incoming socket connection')
 
-            session = new Session(socket, @roles, @config.getValue('auth') ? null)
+            session = new Session(
+                socket,
+                @roles,
+                @config.getValue('auth') ? null,
+                @config.getValue('realms') ? null
+            )
 
             session.on('attach', (realm, defer)=>
                 try
