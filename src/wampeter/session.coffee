@@ -19,7 +19,7 @@ class Session extends EventEmitter
             throw new TypeError('wamp.error.invalid_roles')
 
         # create the authenticator - this function will return null if no
-        # authenticator is require (ie. if `authConfig` is null)
+        # authenticator is required (ie. if `authConfig` is null)
         #
         @authenticator = Authenticator(@, authConfig)
 
