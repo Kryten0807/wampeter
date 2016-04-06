@@ -90,57 +90,61 @@ class Session extends EventEmitter
         .then((message)=>
             logger.debug('parsing message', message)
             switch message.type
+
                 when 'HELLO'
                     # set an ID for the session
                     #
                     @id = randomid()
 
-                    # do we have an authenticator? if not, then  process the
-                    # HELLO message without challenge/response; otherwise, issue
-                    # the CHALLENGE message and wait for a response
+                    # start a promise to sort out the remainder of the message
                     #
-                    if not @authenticator?
-                        q.fcall(()=>
-                            @realm = message.realm
-
-                            defer = q.defer()
-                            @emit('attach', message.realm, defer)
-                            defer.promise
-                        ).then(()=>
-                            @send('WELCOME', {
-                                session:
-                                    id: @id
-                                details:
-                                    roles: @roles
-                            })
-                        ).then(()->
-                            logger.debug('attached session to realm', message.realm)
-                        ).catch((err)=>
-                            logger.error('cannot establish session', err.stack)
-                            @send('ABORT', {
-                                details:
-                                    message: 'Cannot establish session!'
-                                reason: err.message
-                            })
-                        ).done()
-
-                    else
-                        # send the CHALLENGE message
+                    q.fcall(()=>
+                        # initialize the realm associated with this session
                         #
-                        @authenticator.challenge(message).then((challengeMessage)=>
-                            logger.debug('sending CHALLENGE message', challengeMessage)
-                            @send('CHALLENGE', challengeMessage)
-                        ).catch((err)=>
-                            logger.error('cannot send CHALLENGE message', err)
-                            @send('ABORT', {
-                                details:
-                                    message: 'Cannot establish session!'
-                                reason: err.message
+                        @realm = message.realm
+
+                        defer = q.defer()
+                        @emit('attach', message.realm, defer)
+                        defer.promise
+                    ).then(()=>
+                        # time to send the next message - do we need to
+                        # authenticate?
+                        #
+                        if not @authenticator?
+                            # no authentication - send welcome message
+                            #
+                            @send('WELCOME', {
+                                session: {id: @id},
+                                details: {roles: @roles}
                             })
-                        ).done()
+                        else
+                            # need to authenticate - send the challenge message
+                            #
+                            @authenticator.challenge(message).then((challengeMessage)=>
+                                logger.debug("------------------ challenge message", challengeMessage)
+                                @send('CHALLENGE', challengeMessage)
+                            ).catch((err)=>
+                                logger.error('cannot send CHALLENGE message', err)
+                                @send('ABORT', {
+                                    details:
+                                        message: 'Cannot establish session!'
+                                    reason: err.message
+                                })
+                            ).done()
+                    ).catch((err)=>
+                        logger.error('cannot establish session', err.stack)
+                        @send('ABORT', {
+                            details:
+                                message: 'Cannot establish session!'
+                            reason: err.message
+                        })
+                    ).done()
 
                 when 'AUTHENTICATE'
-                    @authenticator?.authenticate(message).then((user)=>
+                    @authenticator?.authenticate(message).then(()=>
+                        # if no exception was thrown, then we authenticated
+                        # successfully. Time to send the welcome message
+                        #
                         @send('WELCOME', {
                             session:
                                 id: @id
@@ -148,6 +152,9 @@ class Session extends EventEmitter
                                 roles: @roles
                         })
                     ).catch((err)=>
+                        # unable to authenticate - log the error and send an
+                        # abort message to the client
+                        #
                         logger.error('cannot authenticate', err)
                         @send('ABORT', {
                             details:
