@@ -70,6 +70,8 @@
 
   module.exports.valid_key = VALID_KEY;
 
+  module.exports.role = ROLE;
+
   module.exports["static"] = STATIC_CONFIG;
 
   module.exports.dynamic = DYNAMIC_CONFIG;

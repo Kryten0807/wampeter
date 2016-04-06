@@ -1,5 +1,5 @@
 (function() {
-  var BASE_URI, CLEANUP_DELAY, CLogger, D, PORT, Q, REALM_URI, ROLE, ROUTER_CONFIG, URL, VALID_AUTHID, VALID_KEY, authenticator, autobahn, chai, expect, logger, obj, obj1, obj2, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, Cfg, D, INVALID_AUTHID, INVALID_KEY, Q, REALM_URI, ROLE, ROUTER_CONFIG, VALID_AUTHID, VALID_KEY, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -29,61 +29,26 @@
 
   CLEANUP_DELAY = 500;
 
-  PORT = 3000;
+  Cfg = require('./router-config');
 
-  URL = "ws://localhost:" + PORT;
+  ROUTER_CONFIG = Cfg["static"];
 
-  BASE_URI = 'com.to.inge';
+  REALM_URI = Cfg.realm;
 
-  REALM_URI = BASE_URI + '.world';
+  ROLE = Cfg.role;
 
-  VALID_AUTHID = 'nicolas.cage';
+  VALID_AUTHID = Cfg.valid_authid;
 
-  VALID_KEY = 'abc123';
+  VALID_KEY = Cfg.valid_key;
 
-  ROLE = 'role_1';
+  INVALID_AUTHID = 'david.hasselhoff';
 
-  authenticator = function(realm, authid, details) {
-    expect(realm).to.be.equal(REALM_URI);
-    return {
-      secret: VALID_KEY,
-      role: 'frontend'
-    };
-  };
-
-  ROUTER_CONFIG = {
-    port: PORT,
-    realms: (
-      obj = {},
-      obj["" + REALM_URI] = {
-        roles: (
-          obj1 = {},
-          obj1["" + ROLE] = {},
-          obj1
-        )
-      },
-      obj
-    ),
-    auth: {
-      wampcra: {
-        type: 'static',
-        users: (
-          obj2 = {},
-          obj2["" + VALID_AUTHID] = {
-            secret: VALID_KEY,
-            role: 'frontend'
-          },
-          obj2
-        )
-      }
-    }
-  };
+  INVALID_KEY = 'xyz789';
 
   describe('Router:Static Authorization', function() {
-    var connect, connection, router, session;
+    var connect, connection, router;
     router = null;
     connection = null;
-    session = null;
 
     /*
     before((done_func)->
@@ -130,16 +95,13 @@
     });
     connect = function(authConfig) {
       var cfg, deferred, onchallenge;
-      logger.debug('------------- setting up deferred');
       deferred = Q.defer();
       cfg = ROUTER_CONFIG;
-      cfg.realms[REALM_URI].roles[ROLE_NAME] = authConfig;
-      logger.debug('------------- setting up router', cfg.realms);
+      cfg.realms[REALM_URI].roles[ROLE] = authConfig;
       router = wampeter.createRouter(cfg);
-      logger.debug('------------- setting up realm', REALM_URI);
-      router.createRealm(REALM_URI);
       onchallenge = function(session, method, extra) {
-        logger.debug('------------- onchallenge');
+        console.log('++++++++++ onchallenge session', session);
+        console.log('++++++++++ onchallenge extra', extra);
         expect(method).to.equal('wampcra');
         return autobahn.auth_cra.sign(VALID_KEY, extra.challenge);
       };
@@ -150,17 +112,17 @@
         authid: VALID_AUTHID,
         onchallenge: onchallenge
       });
-      connection.onopen = function(s) {
-        logger.debug('------------- onopen');
-        expect(s).to.be.an["instanceof"](autobahn.Session);
-        expect(s.isOpen).to.be["true"];
-        session = s;
+      connection.onopen = function(session) {
+        logger.debug('------------- onopen', session);
+        expect(session).to.be.an["instanceof"](autobahn.Session);
+        expect(session.isOpen).to.be["true"];
         logger.debug('------------- onopen - resolving deferred');
-        return deferred.resolve('here i am');
+        return setTimeout((function() {
+          return deferred.resolve(session);
+        }), CLEANUP_DELAY);
       };
       logger.debug('------------- opening connection');
       connection.open();
-      logger.debug('------------- returning deferred');
       return deferred.promise;
     };
     return it('should successfully call when call permitted', function(done_func) {
@@ -178,8 +140,8 @@
           }
         }
       ];
-      return connect(config).then(function() {
-        logger.debug('------------- in connect deferred');
+      return connect(config).then(function(session) {
+        logger.debug('------------- in connect deferred', session);
         return session.call('com.example.authtest', ['hello inge!'], {
           to: 'inge'
         }).then(function(result) {
