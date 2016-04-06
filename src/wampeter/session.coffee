@@ -68,6 +68,44 @@ class Session extends EventEmitter
 
         regex.test(string)
 
+    isAuthorized: (uri)=>
+
+        # do we have an authenticator? if not, then there's no need to check for
+        # authorization since this is a wide-open router
+        #
+        if not @authenticator?
+            return true
+
+        # find the roles for the current realm
+        #
+        roles = @realms[@realm]?.roles
+
+        # find the user role configuration
+        #
+        details = roles?[@clientRole]
+
+        # do we have any details? if not, then throw a "no such role" error
+        #
+        if not details?
+            throw new TypeError('wamp.error.no_such_role')
+
+
+        matches = []
+
+        _.forEach(details, (value, pattern)=>
+            # if the URI matches the pattern, then add the 'call' property flag
+            # to the list of matches
+            #
+            if @isWildcardMatch(pattern, uri)
+                logger.debug("---- pattern match found", value)
+                matches.push(value.call ? false)
+        )
+
+        # reduce the list of matches to a single boolean value & return it
+        #
+        _.reduce(matches, ((result, m)-> result and m), true)
+
+
     send: (type, opts)=>
         parser.encode(type, opts)
         .then((message)=>
