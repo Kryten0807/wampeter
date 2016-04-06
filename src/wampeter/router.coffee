@@ -19,6 +19,7 @@ class Router extends WebSocketServer
         @config = new CConf('router', [], {
             path             : '/wampeter'
             autoCreateRealms : true
+            realms           : {}
         }).load(opts || {})
 
         # initialize the list of realms
