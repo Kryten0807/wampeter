@@ -68,7 +68,7 @@ class Session extends EventEmitter
 
         regex.test(string)
 
-    isAuthorized: (uri)=>
+    isAuthorized: (uri, type)=>
 
         # do we have an authenticator? if not, then there's no need to check for
         # authorization since this is a wide-open router
@@ -98,7 +98,7 @@ class Session extends EventEmitter
             #
             if @isWildcardMatch(pattern, uri)
                 logger.debug("---- pattern match found", value)
-                matches.push(value.call ? false)
+                matches.push(value[type] ? false)
         )
 
         # is the list of matches empty? if so, add a single false value
