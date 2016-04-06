@@ -312,22 +312,26 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'REGISTER'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('register', message.procedure, defer)
-                        defer.promise
-                    ).then((registrationId)=>
-                        @send('REGISTERED', {
-                            register:
-                                request:
-                                    id: message.request.id
-                            registration:
-                                id: registrationId
-                        })
-                    ).catch((err)=>
-                        logger.error('cannot register remote procedure', message.procedure, err.stack)
-                        @error('REGISTER', message.request.id, err)
-                    ).done()
+                    if @isAuthorized(message.procedure, 'register')
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('register', message.procedure, defer)
+                            defer.promise
+                        ).then((registrationId)=>
+                            @send('REGISTERED', {
+                                register:
+                                    request:
+                                        id: message.request.id
+                                registration:
+                                    id: registrationId
+                            })
+                        ).catch((err)=>
+                            logger.error('cannot register remote procedure', message.procedure, err.stack)
+                            @error('REGISTER', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to call remote procedure', @clientRole, message.procedure)
+                        @error('REGISTER', message.request.id, new TypeError('wamp.error.not_authorized'))
 
                 when 'UNREGISTER'
                     q.fcall(()=>
