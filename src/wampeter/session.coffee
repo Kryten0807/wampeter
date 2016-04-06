@@ -54,6 +54,19 @@ class Session extends EventEmitter
         @clientRole = null
 
 
+    isWildcardMatch: (pattern, string)->
+        # the pattern may be a partial URI, so replace any '.' characters with
+        # '\.'
+        #
+        newPattern = pattern.replace('.', '\.')
+
+        # create a new regex for the pattern
+        #
+        regex = new RegExp("^#{newPattern.split('*').join('.*')}$")
+
+        logger.debug("---- regex conversion #{pattern}", regex)
+
+        regex.test(string)
 
     send: (type, opts)=>
         parser.encode(type, opts)
