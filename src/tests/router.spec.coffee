@@ -123,8 +123,6 @@ describe('Router:Session', ()->
     it('should establish a new session', (done_func)->
         done = D(done_func)
 
-        router.createRealm('com.to.inge.world')
-
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
             url: 'ws://localhost:3000/wampeter'
