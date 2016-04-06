@@ -106,7 +106,7 @@ describe('Router:Static Authorization', ()->
     )
     ###
 
-    after((done_func)->
+    afterEach((done_func)->
         done = D(done_func)
 
         cleanup = ()-> router.close().then(done).catch(done).done()
