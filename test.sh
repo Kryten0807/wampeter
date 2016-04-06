@@ -8,7 +8,7 @@ for f in $FILES; do
     echo "testing... $f"
     echo "----------------------------------------"
 
-    VISIBLE=warn,error ./node_modules/.bin/mocha "$f"
+    VISIBLE= ./node_modules/.bin/mocha "$f"
 
 
 done
