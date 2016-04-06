@@ -1,5 +1,5 @@
 (function() {
-  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, PORT, REALM_URI, ROLE, ROUTER_CONFIG, URL, VALID_AUTHID, VALID_KEY, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, Cfg, D, INVALID_AUTHID, INVALID_KEY, REALM_URI, ROUTER_CONFIG, VALID_AUTHID, VALID_KEY, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -27,44 +27,21 @@
 
   CLEANUP_DELAY = 500;
 
-  PORT = 3000;
+  Cfg = require('./router-config');
 
-  URL = "ws://localhost:" + PORT;
+  ROUTER_CONFIG = Cfg["static"];
 
-  BASE_URI = 'com.to.inge';
+  REALM_URI = Cfg.realm;
 
-  REALM_URI = BASE_URI + '.world';
+  VALID_AUTHID = Cfg.valid_authid;
 
-  VALID_AUTHID = 'nicolas.cage';
-
-  VALID_KEY = 'abc123';
+  VALID_KEY = Cfg.valid_key;
 
   INVALID_AUTHID = 'david.hasselhoff';
 
   INVALID_KEY = 'xyz789';
 
-  ROLE = 'role_1';
-
-  ROUTER_CONFIG = {
-    port: PORT,
-    autoCreateRealms: false,
-    realm: REALM_URI
-
-    /*
-    roles:
-        "#{ROLE}": {
-             * permissions go here
-        }
-    
-    auth:
-        wampcra:
-            type: 'static'
-            users:
-                "#{VALID_AUTHID}":
-                    secret: VALID_KEY
-                    role: 'frontend'
-     */
-  };
+  delete ROUTER_CONFIG.auth;
 
   describe('Router#constructor', function() {
     return it('should instantiate', function(done_func) {
