@@ -274,47 +274,61 @@ class Session extends EventEmitter
                     ).done()
 
                 when 'PUBLISH'
-                    q.fcall(()=>
-                        defer = q.defer()
-                        @emit('publish', message.topic, defer)
-                        defer.promise
-                    ).then((topic)=>
-                        publicationId = randomid()
+                    if @isAuthorized(message.topic, 'publish')
+                        q.fcall(()=>
+                            defer = q.defer()
+                            @emit('publish', message.topic, defer)
+                            defer.promise
+                        ).then((topic)=>
+                            logger.debug('--------------- publish got promised topic', topic)
 
-                        if message.options and message.options.acknowledge
-                            @send('PUBLISHED', {
-                                publish:
-                                    request:
-                                        id: message.request.id
-                                publication:
-                                    id: publicationId
-                            })
+                            # create a queue in which to save the publication
+                            # promises
+                            #
+                            queue = []
 
-                        queue = []
-                        _.forEach(topic.sessions, (session)->
-                            event = session.send('EVENT', {
-                                subscribed:
-                                    subscription:
-                                        id: topic.id
-                                published:
+                            publicationId = randomid()
+
+                            if message.options? and message.options.acknowledge
+                                @send('PUBLISHED', {
+                                    publish:
+                                        request:
+                                            id: message.request.id
                                     publication:
                                         id: publicationId
-                                details: {}
-                                publish:
-                                    args: message.args
-                                    kwargs: message.kwargs
-                            })
+                                })
 
-                            queue.push(event)
-                        )
+                            # do we have a topic? if so, build the queue of promises
+                            #
+                            if topic?
+                                _.forEach(topic.sessions, (session)->
+                                    event = session.send('EVENT', {
+                                        subscribed:
+                                            subscription:
+                                                id: topic.id
+                                        published:
+                                            publication:
+                                                id: publicationId
+                                        details: {}
+                                        publish:
+                                            args: message.args
+                                            kwargs: message.kwargs
+                                    })
 
-                        return q.all(queue)
-                    ).then(()->
-                        logger.info('published event to topic', message.topic)
-                    ).catch((err)=>
-                        logger.error('cannot publish event to topic', message.topic, err.stack)
-                        @error('PUBLISH', message.request.id, err)
-                    ).done()
+                                    queue.push(event)
+                                )
+
+                            return q.all(queue)
+                        ).then(()->
+                            logger.info('published event to topic', message.topic)
+                        ).catch((err)=>
+                            logger.error('cannot publish event to topic', message.topic, err.stack)
+                            @error('PUBLISH', message.request.id, err)
+                        ).done()
+                    else
+                        logger.error('not authorized to publish', @clientRole, message.topic)
+                        if message.options.acknowledge
+                            @error('PUBLISH', message.request.id, new TypeError('wamp.error.not_authorized'))
 
                 when 'REGISTER'
                     if @isAuthorized(message.procedure, 'register')
