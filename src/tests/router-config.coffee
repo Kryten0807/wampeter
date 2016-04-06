@@ -55,9 +55,10 @@ DYNAMIC_CONFIG.auth =
 
 
 
-module.exports.realm =   REALM_URI
+module.exports.realm =        REALM_URI
 module.exports.valid_authid = VALID_AUTHID
-module.exports.valid_key = VALID_KEY
+module.exports.valid_key =    VALID_KEY
+module.exports.role =         ROLE
 
 module.exports.static =  STATIC_CONFIG
 module.exports.dynamic = DYNAMIC_CONFIG
