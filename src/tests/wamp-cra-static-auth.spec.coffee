@@ -30,10 +30,6 @@ INVALID_KEY = 'xyz789'
 
 ROLE = 'role_1'
 
-authenticator = (realm, authid, details)->
-    expect(realm).to.be.equal(REALM_URI)
-
-    { secret: VALID_KEY, role: 'frontend' }
 
 
 
@@ -59,6 +55,15 @@ ROUTER_CONFIG =
                 "#{VALID_AUTHID}":
                     secret: VALID_KEY
                     role: 'frontend'
+
+
+
+
+
+
+
+
+
 
 
 
