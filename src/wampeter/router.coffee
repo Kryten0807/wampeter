@@ -51,9 +51,7 @@ class Router extends WebSocketServer
 
         # configure the realms (if any)
         #
-        logger.debug("--------------- configuring realms", @config.getValue('realms'))
         _.forEach(@config.getValue('realms'), (values, realm)=> @createRealm(realm))
-        logger.debug("--------------- configuring realms", @realms)
 
         # initialize the WebSocketServer
         #

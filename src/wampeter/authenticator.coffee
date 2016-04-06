@@ -81,7 +81,6 @@ class Authenticator
                 # set up the challenge generator method
                 #
                 @generateChallenge = (message)=>
-                    logger.debug("-------------- STATIC generating challenge", message)
                     # extract the user ID from the message
                     #
                     authid = message?.details?.authid
@@ -123,8 +122,6 @@ class Authenticator
                 # set up the challenge generator method
                 #
                 @generateChallenge = (message)=>
-                    logger.debug("-------------- DYNAMIC generating challenge", message)
-
                     realm = message?.realm
                     authid = message?.details?.authid
                     details = message?.details
@@ -171,11 +168,6 @@ class Authenticator
 
     authenticate: (message)=>
         q.fcall(()=>
-            logger.debug('authenticating', message)
-
-            logger.debug('----- auth sig', message.signature)
-            logger.debug('----- auth should be', @signature)
-
             if message.signature? and message.signature==@signature
                 @user.authid
             else
@@ -218,8 +210,6 @@ class Authenticator
             # get the details from the message
             #
             authid = message.details.authid
-
-            logger.debug("-------------- in promise #{authid}")
 
             if not authid?
                 throw new Error('no user provided')
