@@ -47,6 +47,8 @@ class Session extends EventEmitter
         @socket = socket
         @roles = supportedRoles
 
+        @clientRole = null
+
 
 
     send: (type, opts)=>
