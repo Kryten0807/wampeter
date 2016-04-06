@@ -74,8 +74,6 @@ describe('Router:Static WAMP-CRA Successes', ()->
 
         router = wampeter.createRouter(ROUTER_CONFIG)
 
-        router.createRealm(REALM_URI)
-
         setTimeout(done, CLEANUP_DELAY)
     )
 
@@ -129,8 +127,6 @@ describe('Router:Static WAMP-CRA Failures', ()->
         done = D(done_func)
 
         router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm(REALM_URI)
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )

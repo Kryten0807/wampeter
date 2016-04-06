@@ -81,8 +81,6 @@ describe('Router:Dynamic WAMP-CRA Successes', ()->
 
         router = wampeter.createRouter(ROUTER_CONFIG)
 
-        router.createRealm('com.to.inge.world')
-
         setTimeout(done, CLEANUP_DELAY)
     )
 
@@ -136,8 +134,6 @@ describe('Router:Dynamic WAMP-CRA Failures', ()->
         done = D(done_func)
 
         router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm(REALM_URI)
 
         setTimeout((()-> done()), CLEANUP_DELAY)
     )
