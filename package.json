@@ -34,7 +34,8 @@
     "jsdoc": "^3.3.0-alpha9",
     "mocha": "^1.21.4",
     "gulp": "~3.9.1",
-    "gulp-coffee": "~2.3.1"
+    "gulp-coffee": "~2.3.1",
+    "tape": "~4.5.1"
   },
   "dependencies": {
     "debug": "^2.0.0",
