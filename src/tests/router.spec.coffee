@@ -46,11 +46,12 @@ ROUTER_CONFIG =
     port: PORT
 
     # path: '/wampeter'
-    # autoCreateRealms: true
+    autoCreateRealms: false
     # logger: new CLogger({name: 'nightlife-router'})
 
     realm: REALM_URI
 
+    ###
     roles:
         "#{ROLE}": {
             # permissions go here
@@ -63,7 +64,7 @@ ROUTER_CONFIG =
                 "#{VALID_AUTHID}":
                     secret: VALID_KEY
                     role: 'frontend'
-
+    ###
 
 
 
