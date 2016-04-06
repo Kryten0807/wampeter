@@ -10,13 +10,17 @@ _             = require('lodash')
 Authenticator = require('./authenticator')
 
 class Session extends EventEmitter
-    constructor: (socket, supportedRoles, authConfig = null)->
+    constructor: (socket, supportedRoles, authenticationConfig = null, realms = null)->
 
         if not (socket instanceof WebSocket)
             throw new TypeError('wamp.error.invalid_socket')
 
         if not (_.isPlainObject(supportedRoles))
             throw new TypeError('wamp.error.invalid_roles')
+
+        # save the realms configuration
+        #
+        @realms = realms
 
         # create the authenticator - this function will return null if no
         # authenticator is required (ie. if `authConfig` is null)
