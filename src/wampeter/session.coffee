@@ -23,9 +23,9 @@ class Session extends EventEmitter
         @realms = realms
 
         # create the authenticator - this function will return null if no
-        # authenticator is required (ie. if `authConfig` is null)
+        # authenticator is required (ie. if `authenticationConfig` is null)
         #
-        @authenticator = Authenticator(@, authConfig)
+        @authenticator = Authenticator(@, authenticationConfig)
 
         EventEmitter.call(@)
 
