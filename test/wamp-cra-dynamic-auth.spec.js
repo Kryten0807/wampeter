@@ -1,5 +1,5 @@
 (function() {
-  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, PORT, REALM_URI, ROUTER_CONFIG, URL, VALID_AUTHID, VALID_KEY, authenticator, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var CLEANUP_DELAY, CLogger, Cfg, D, INVALID_AUTHID, INVALID_KEY, REALM_URI, ROUTER_CONFIG, VALID_AUTHID, VALID_KEY, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -27,46 +27,19 @@
 
   CLEANUP_DELAY = 500;
 
-  PORT = 3000;
+  Cfg = require('./router-config');
 
-  URL = "ws://localhost:" + PORT;
+  ROUTER_CONFIG = Cfg.dynamic;
 
-  BASE_URI = 'com.to.inge';
+  REALM_URI = Cfg.realm;
 
-  REALM_URI = BASE_URI + '.world';
+  VALID_AUTHID = Cfg.valid_authid;
 
-  VALID_AUTHID = 'nicolas.cage';
-
-  VALID_KEY = 'abc123';
+  VALID_KEY = Cfg.valid_key;
 
   INVALID_AUTHID = 'david.hasselhoff';
 
   INVALID_KEY = 'xyz789';
-
-  authenticator = function(realm, authid, details) {
-    expect(realm).to.be.equal(REALM_URI);
-    return {
-      secret: VALID_KEY,
-      role: 'frontend'
-    };
-  };
-
-  ROUTER_CONFIG = {
-    port: PORT,
-    realms: {
-      REALM_URI: {
-        roles: {
-          frontend: {}
-        }
-      }
-    },
-    auth: {
-      wampcra: {
-        type: 'dynamic',
-        authenticator: authenticator
-      }
-    }
-  };
 
   describe('Router:Dynamic WAMP-CRA Successes', function() {
     var connection, router, session;
@@ -77,7 +50,6 @@
       var done;
       done = D(done_func);
       router = wampeter.createRouter(ROUTER_CONFIG);
-      router.createRealm('com.to.inge.world');
       return setTimeout(done, CLEANUP_DELAY);
     });
     after(function(done_func) {
@@ -121,7 +93,6 @@
       var done;
       done = D(done_func);
       router = wampeter.createRouter(ROUTER_CONFIG);
-      router.createRealm(REALM_URI);
       return setTimeout((function() {
         return done();
       }), CLEANUP_DELAY);

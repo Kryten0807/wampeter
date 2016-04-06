@@ -1,5 +1,5 @@
 (function() {
-  var CLEANUP_DELAY, CLogger, D, autobahn, chai, expect, logger, promised, spies, wampeter;
+  var BASE_URI, CLEANUP_DELAY, CLogger, D, INVALID_AUTHID, INVALID_KEY, PORT, REALM_URI, ROLE, ROUTER_CONFIG, URL, VALID_AUTHID, VALID_KEY, autobahn, chai, expect, logger, promised, spies, wampeter;
 
   global.AUTOBAHN_DEBUG = true;
 
@@ -27,13 +27,50 @@
 
   CLEANUP_DELAY = 500;
 
+  PORT = 3000;
+
+  URL = "ws://localhost:" + PORT;
+
+  BASE_URI = 'com.to.inge';
+
+  REALM_URI = BASE_URI + '.world';
+
+  VALID_AUTHID = 'nicolas.cage';
+
+  VALID_KEY = 'abc123';
+
+  INVALID_AUTHID = 'david.hasselhoff';
+
+  INVALID_KEY = 'xyz789';
+
+  ROLE = 'role_1';
+
+  ROUTER_CONFIG = {
+    port: PORT,
+    autoCreateRealms: false,
+    realm: REALM_URI
+
+    /*
+    roles:
+        "#{ROLE}": {
+             * permissions go here
+        }
+    
+    auth:
+        wampcra:
+            type: 'static'
+            users:
+                "#{VALID_AUTHID}":
+                    secret: VALID_KEY
+                    role: 'frontend'
+     */
+  };
+
   describe('Router#constructor', function() {
     return it('should instantiate', function(done_func) {
       var done, router;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000
-      });
+      router = wampeter.createRouter(ROUTER_CONFIG);
       expect(router).to.be.an["instanceof"](wampeter.Router);
       expect(router.roles).to.have.property('broker');
       expect(router.roles).to.have.property('dealer');
@@ -49,9 +86,7 @@
     before(function(done_func) {
       var done;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000
-      });
+      router = wampeter.createRouter(ROUTER_CONFIG);
       return setTimeout((function() {
         return done();
       }), CLEANUP_DELAY);
@@ -66,7 +101,6 @@
     it('should establish a new session', function(done_func) {
       var done;
       done = D(done_func);
-      router.createRealm('com.to.inge.world');
       connection = new autobahn.Connection({
         realm: 'com.to.inge.world',
         url: 'ws://localhost:3000/wampeter'
@@ -100,9 +134,7 @@
     before(function(done_func) {
       var done;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000
-      });
+      router = wampeter.createRouter(ROUTER_CONFIG);
       return setTimeout((function() {
         connection = new autobahn.Connection({
           realm: 'com.to.inge.world',
@@ -183,9 +215,7 @@
     before(function(done_func) {
       var done;
       done = D(done_func);
-      router = wampeter.createRouter({
-        port: 3000
-      });
+      router = wampeter.createRouter(ROUTER_CONFIG);
       return setTimeout((function() {
         connection = new autobahn.Connection({
           realm: 'com.to.inge.world',
