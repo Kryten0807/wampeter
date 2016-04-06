@@ -18,26 +18,6 @@ chai.use(spies).use(promised)
 CLEANUP_DELAY = 500
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Cfg = require('./router-config')
 
 ROUTER_CONFIG = Cfg.static
@@ -52,59 +32,10 @@ INVALID_AUTHID = 'david.hasselhoff'
 INVALID_KEY = 'xyz789'
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 describe('Router:Static Authorization PUBLISH', ()->
 
     router = null
     connection = null
-    # session = null
-
-    ###
-    before((done_func)->
-        done = D(done_func)
-
-        router = wampeter.createRouter(ROUTER_CONFIG)
-
-        router.createRealm(REALM_URI)
-
-        onchallenge = (session, method, extra)->
-
-            expect(method).to.equal('wampcra')
-
-            # respond to the challenge
-            #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
-
-        connection = new autobahn.Connection({
-            realm: REALM_URI
-            url: 'ws://localhost:3000/wampeter'
-
-            authmethods: ['wampcra']
-            authid: VALID_AUTHID
-            onchallenge: onchallenge
-        })
-
-
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
-            setTimeout(done, CLEANUP_DELAY)
-
-        connection.open()
-    )
-    ###
 
     afterEach((done_func)->
         done = D(done_func)
@@ -150,11 +81,6 @@ describe('Router:Static Authorization PUBLISH', ()->
         deferred.promise
 
 
-
-
-
-
-
     it('should successfully publish when permitted - simple config', (done_func)->
         done = D(done_func)
 
@@ -180,7 +106,6 @@ describe('Router:Static Authorization PUBLISH', ()->
             done()
         ).done()
     )
-
 
 
     it('should fail to publish when disallowed (no acknowledgement) - simple config', (done_func)->
@@ -212,6 +137,7 @@ describe('Router:Static Authorization PUBLISH', ()->
         ).done()
     )
 
+
     it('should fail to publish when disallowed (with acknowledgement) - simple config', (done_func)->
         done = D(done_func)
 
@@ -240,14 +166,6 @@ describe('Router:Static Authorization PUBLISH', ()->
             done()
         ).done()
     )
-
-
-
-
-
-
-
-
 
 
     it('should successfully publish when permitted - complex config', (done_func)->
@@ -336,6 +254,7 @@ describe('Router:Static Authorization PUBLISH', ()->
         ).done()
     )
 
+
     it('should fail to publish when disallowed (with acknowledgement) - complex config', (done_func)->
         done = D(done_func)
 
@@ -379,10 +298,6 @@ describe('Router:Static Authorization PUBLISH', ()->
             done()
         ).done()
     )
-
-
-
-
 
 
     it('should successfully publish when permitted - non-matching items in config', (done_func)->
@@ -461,6 +376,7 @@ describe('Router:Static Authorization PUBLISH', ()->
         ).done()
     )
 
+
     it('should fail to publish when disallowed (with acknowledgement) - non-matching items in config', (done_func)->
         done = D(done_func)
 
@@ -501,10 +417,6 @@ describe('Router:Static Authorization PUBLISH', ()->
     )
 
 
-
-
-
-
     it('should fail to publish when disallowed (no acknowledgement) - no matching rule', (done_func)->
         done = D(done_func)
 
@@ -533,6 +445,7 @@ describe('Router:Static Authorization PUBLISH', ()->
             done()
         ).done()
     )
+
 
     it('should fail to publish when disallowed (with acknowledgement) - no matching rule', (done_func)->
         done = D(done_func)
