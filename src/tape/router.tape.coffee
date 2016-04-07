@@ -5,7 +5,7 @@ autobahn = require('autobahn')
 TestManager = require('./test-manager')
 wampeter  = require('../lib/router')
 
-config = require('../test/router-config')
+config = require('./router-config')
 ROUTER_CONFIG = config.static
 
 # delete the authentication config - we're not testing that in this suite
