@@ -9,7 +9,6 @@ ROUTER_CONFIG = config.static
 # still trying to track down the failure to close after testing
 # see https://github.com/substack/tape/issues/216
 
-router = null
 # instantiate a test manager
 #
 mgr = new TestManager()
@@ -28,19 +27,18 @@ test('Router#constructor - should instantiate a router', (assert)->
 
     router = wampeter.createRouter(ROUTER_CONFIG)
 
-    assert.true(router instanceof wampeter.Router)
-    assert.true(router.roles?)
-    assert.true(router.roles.broker?)
-    assert.true(router.roles.dealer?)
+    assert.true(router instanceof wampeter.Router, 'instance of Router class')
+    assert.true(router.roles?, 'roles property exists')
+    assert.true(router.roles.broker?, 'roles.broker property exists')
+    assert.true(router.roles.dealer?, 'roles.dealer property exists')
 
     router.close().fin(()->
-        router = null
-        console.log('fin!')
         # signal the end of the test to the manager
         #
         mgr.end()
-        assert.end()
-        # process.exit()
-    ).done()
 
+        # end the test
+        #
+        assert.end()
+    ).done()
 )
