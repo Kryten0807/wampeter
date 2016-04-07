@@ -292,7 +292,6 @@ test('Router:RPC - should register, call, unregister', (assert)->
         session.register(registerURI, registeredFunction)
 
     ).then((registration)->
-        console.log('--- registration complete', registration)
         # test the registration
         #
         assert.true(registration instanceof autobahn.Registration, 'the registration is the correct type')
