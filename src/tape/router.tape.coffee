@@ -167,9 +167,6 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
         # subscribe to a topic
         #
-        f = (x)->
-            assert.true(x[0]=="#{testValue}", 'the correct value was published')
-
         subscriptionFunction = sinon.spy()
 
         # @todo test - invalid topic
