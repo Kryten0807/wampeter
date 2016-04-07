@@ -1,5 +1,6 @@
 test = require('tape')
 
+TestManager = require('./test-manager')
 wampeter  = require('../lib/router')
 
 config = require('../test/router-config')
