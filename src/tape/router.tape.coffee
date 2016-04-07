@@ -227,3 +227,108 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         mgr.end()
     ).done()
 )
+
+
+
+
+
+
+test('Router:RPC - should register, call, unregister', (assert)->
+
+    # signal the start of the test to the manager
+    #
+    mgr.start()
+
+    router = null
+    connection = null
+    session = null
+
+    registeredFunction = null
+
+    registerURI = 'com.example.inge'
+    testValue = _.uniqueId()
+
+
+    Manager.createRouter(ROUTER_CONFIG).then((rtr)->
+        router = rtr
+
+        Manager.openConnection({
+            realm: config.realm
+            url: 'ws://localhost:3000/wampeter'
+        })
+
+    ).then((values)->
+        # extract the connection & session values
+        #
+        [conn, sess] = values
+
+        # save the connection & session
+        #
+        connection = conn
+        session = sess
+
+        # connection is open - test some stuff
+        #
+        assert.true(session instanceof autobahn.Session, 'instance of autobahn.Session')
+        assert.true(session.isOpen, 'session is open')
+
+        # subscribe to a topic
+        #
+        registeredFunction = sinon.spy()
+
+        session.register(registerURI, registeredFunction)
+
+    ).then((registration)->
+        console.log('--- registration complete', registration)
+        # test the registration
+        #
+        assert.true(registration instanceof autobahn.Registration, 'the registration is the correct type')
+        assert.true(registration?, 'the registration exists')
+        assert.true(registration.procedure?, 'the procedure exists')
+        assert.true(registration.procedure==registerURI, 'the procedure URI has the correct value')
+
+        # publish the value to the topic
+        #
+        session.call(registerURI, [testValue])
+
+        Manager.pause().then(()->
+            # unsubscribe
+            #
+            session.unregister(registration)
+        ).then(()->
+            Manager.pause()
+        ).then(()->
+            # close the connection
+            #
+            Manager.closeConnection(connection)
+        )
+    ).then((closeReason)->
+        # connection is closed - test the reason
+        #
+        assert.true(closeReason=='closed', 'correct close reason')
+
+        # pause, then close the router
+        #
+        Manager.pause()
+    ).then(()->
+        # check to ensure the spy event was called exactly once & with the
+        # correct arguments
+        #
+        assert.true(registeredFunction.callCount==1, 'the subscription function was called once')
+
+        assert.true(registeredFunction.firstCall.args[0][0]=="#{testValue}", 'the correct argument was passed to the subscription')
+    ).then(()->
+        router.close()
+    ).catch((err)->
+        console.log('*************** ERROR', err)
+        console.log(err.trace)
+    ).finally(()->
+        # all done, stop testing
+        #
+        assert.end()
+
+        # signal the manager that we're done
+        #
+        mgr.end()
+    ).done()
+)
