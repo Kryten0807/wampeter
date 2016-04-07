@@ -51,13 +51,11 @@ test('Router#constructor - should instantiate a router', (assert)->
         assert.true(router.roles.broker?, 'roles.broker property exists')
         assert.true(router.roles.dealer?, 'roles.dealer property exists')
     ).then(()->
-        console.log('--- closing router')
         router.close()
     ).catch((err)->
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
-        console.log('--- cleaning up tests')
         # all done, stop testing
         #
         assert.end()
@@ -100,7 +98,6 @@ test('Router:Session - should establish a new session and close it', (assert)->
         #
         Manager.closeConnection(connection)
     ).then((closeReason)->
-        console.log('--- connection closed', closeReason)
         # connection is closed - test the reason
         #
         assert.true(closeReason=='closed', 'correct close reason')
@@ -109,13 +106,11 @@ test('Router:Session - should establish a new session and close it', (assert)->
         #
         Manager.pause()
     ).then(()->
-        console.log('--- closing router')
         router.close()
     ).catch((err)->
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
-        console.log('--- cleaning up tests')
         # all done, stop testing
         #
         assert.end()
@@ -201,11 +196,9 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         ).then(()->
             # close the connection
             #
-            console.log('--- closing connection', connection)
             Manager.closeConnection(connection)
         )
     ).then((closeReason)->
-        console.log('--- connection closed', closeReason)
         # connection is closed - test the reason
         #
         assert.true(closeReason=='closed', 'correct close reason')
@@ -219,18 +212,13 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         #
         assert.true(subscriptionFunction.callCount==1, 'the subscription function was called once')
 
-
-        console.log('--- checking args', subscriptionFunction.firstCall.args[0])
-
         assert.true(subscriptionFunction.firstCall.args[0][0]=="#{testValue}", 'the correct argument was passed to the subscription')
     ).then(()->
-        console.log('--- closing router')
         router.close()
     ).catch((err)->
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
-        console.log('--- cleaning up tests')
         # all done, stop testing
         #
         assert.end()
