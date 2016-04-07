@@ -32,7 +32,11 @@ router = null
 
 
 
-
+# ------------------------------------------------------------------------------
+# Test that the factory method instantiates a router
+#
+# @todo test - invalid router config values
+# ------------------------------------------------------------------------------
 test('Router#constructor - should instantiate a router', (assert)->
 
     # signal the start of the test to the manager
@@ -64,8 +68,9 @@ test('Router#constructor - should instantiate a router', (assert)->
     ).done()
 )
 
-
-
+# ------------------------------------------------------------------------------
+# Test that we can connect to the router and then close the connection
+# ------------------------------------------------------------------------------
 test('Router:Session - should establish a new session and close it', (assert)->
 
     # signal the start of the test to the manager
@@ -77,6 +82,13 @@ test('Router:Session - should establish a new session and close it', (assert)->
     Manager.createRouter(ROUTER_CONFIG).then((r)->
         router = r
 
+        # @todo tests - invalid realm
+        # @todo tests - missing realm
+        # @todo tests - invalid URL
+        # @todo tests - missing URL
+
+        # open the connection & return the promise to complete the connection
+        #
         Manager.openConnection({
             realm: config.realm
             url: 'ws://localhost:3000/wampeter'
@@ -104,8 +116,12 @@ test('Router:Session - should establish a new session and close it', (assert)->
         #
         Manager.pause()
     ).then(()->
+        # close the router
+        #
         router.close()
     ).catch((err)->
+        # something went wrong - report the error
+        #
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
@@ -121,6 +137,9 @@ test('Router:Session - should establish a new session and close it', (assert)->
 )
 
 
+# ------------------------------------------------------------------------------
+# Test that we can perform all the operations associated with PubSub
+# ------------------------------------------------------------------------------
 test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
     # signal the start of the test to the manager
@@ -138,12 +157,9 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
+        # save the router object
+        #
         router = rtr
-
-        # @todo tests - invalid realm
-        # @todo tests - missing realm
-        # @todo tests - invalid URL
-        # @todo tests - missing URL
 
         Manager.openConnection({
             realm: config.realm
@@ -241,6 +257,10 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
 
 
+# ------------------------------------------------------------------------------
+# Test that we can perform all the operations associated with remote procedure
+# calls
+# ------------------------------------------------------------------------------
 test('Router:RPC - should register, call, unregister', (assert)->
 
     # signal the start of the test to the manager
@@ -258,6 +278,8 @@ test('Router:RPC - should register, call, unregister', (assert)->
 
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
+        # save the router object
+        #
         router = rtr
 
         Manager.openConnection({
