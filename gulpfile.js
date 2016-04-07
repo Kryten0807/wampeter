@@ -20,7 +20,7 @@ gulp.task('build', function () {
     //
     gulp.src('./src/tape/**/*.coffee')
         .pipe(coffee({bare: false}))
-        .pipe(gulp.dest('./tape'));
+        .pipe(gulp.dest('./test'));
 });
 
 
