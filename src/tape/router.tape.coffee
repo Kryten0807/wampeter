@@ -34,25 +34,35 @@ router = null
 
 
 test('Router#constructor - should instantiate a router', (assert)->
+
     # signal the start of the test to the manager
     #
     mgr.start()
 
-    router = wampeter.createRouter(ROUTER_CONFIG)
+    router = null
 
-    assert.true(router instanceof wampeter.Router, 'instance of Router class')
-    assert.true(router.roles?, 'roles property exists')
-    assert.true(router.roles.broker?, 'roles.broker property exists')
-    assert.true(router.roles.dealer?, 'roles.dealer property exists')
+    Manager.createRouter(ROUTER_CONFIG).then((r)->
+        router = r
 
-    router.close().finally(()->
-        # signal the end of the test to the manager
-        #
-        mgr.end()
-
-        # end the test
+        assert.true(router instanceof wampeter.Router, 'instance of Router class')
+        assert.true(router.roles?, 'roles property exists')
+        assert.true(router.roles.broker?, 'roles.broker property exists')
+        assert.true(router.roles.dealer?, 'roles.dealer property exists')
+    ).then(()->
+        console.log('--- closing router')
+        router.close()
+    ).catch((err)->
+        console.log('*************** ERROR', err)
+        console.log(err.trace)
+    ).finally(()->
+        console.log('--- cleaning up tests')
+        # all done, stop testing
         #
         assert.end()
+
+        # signal the manager that we're done
+        #
+        mgr.end()
     ).done()
 )
 
