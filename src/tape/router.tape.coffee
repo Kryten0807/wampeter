@@ -98,6 +98,7 @@ test('Router:Session - should establish a new session and close it', (assert)->
         })
 
     ).then((values)->
+
         # extract the connection & session values
         #
         [connection, session] = values
@@ -110,7 +111,9 @@ test('Router:Session - should establish a new session and close it', (assert)->
         # close the connection
         #
         Manager.closeConnection(connection)
+
     ).then((closeReason)->
+
         # connection is closed - test the reason
         #
         assert.true(closeReason=='closed', 'correct close reason')
@@ -118,16 +121,22 @@ test('Router:Session - should establish a new session and close it', (assert)->
         # pause, then close the router
         #
         Manager.pause()
+
     ).then(()->
+
         # close the router
         #
         router.close()
+
     ).catch((err)->
+
         # something went wrong - report the error
         #
         console.log('*************** ERROR', err)
         console.log(err.trace)
+
     ).finally(()->
+
         # all done, stop testing
         #
         assert.end()
@@ -135,10 +144,9 @@ test('Router:Session - should establish a new session and close it', (assert)->
         # signal the manager that we're done
         #
         mgr.end()
+
     ).done()
-
 )
-
 
 # ------------------------------------------------------------------------------
 # Test that we can perform all the operations associated with PubSub
@@ -158,7 +166,6 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
     topic = 'com.example.inge'
     testValue = _.uniqueId()
 
-
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
         # save the router object
         #
@@ -170,6 +177,7 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         })
 
     ).then((values)->
+
         # extract the connection & session values
         #
         [conn, sess] = values
@@ -194,6 +202,7 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         session.subscribe(topic, subscriptionFunction)
 
     ).then((subscription)->
+
         # test the subscription topic
         #
         assert.true(subscription instanceof autobahn.Subscription, 'the subscription is the correct type')
@@ -211,7 +220,6 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         session.publish(topic, [testValue])
 
         Manager.pause().then(()->
-
             # @todo test - unsubscribe with invalid subscription
 
             # unsubscribe
@@ -224,7 +232,9 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
             #
             Manager.closeConnection(connection)
         )
+
     ).then((closeReason)->
+
         # connection is closed - test the reason
         #
         assert.true(closeReason=='closed', 'correct close reason')
@@ -232,19 +242,22 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         # pause, then close the router
         #
         Manager.pause()
+
     ).then(()->
+
         # check to ensure the spy event was called exactly once & with the
         # correct arguments
         #
         assert.true(subscriptionFunction.callCount==1, 'the subscription function was called once')
-
         assert.true(subscriptionFunction.firstCall.args[0][0]=="#{testValue}", 'the correct argument was passed to the subscription')
+
     ).then(()->
         router.close()
     ).catch((err)->
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
+
         # all done, stop testing
         #
         assert.end()
@@ -252,13 +265,9 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         # signal the manager that we're done
         #
         mgr.end()
+
     ).done()
 )
-
-
-
-
-
 
 # ------------------------------------------------------------------------------
 # Test that we can perform all the operations associated with remote procedure
@@ -291,6 +300,7 @@ test('Router:RPC - should register, call, unregister', (assert)->
         })
 
     ).then((values)->
+
         # extract the connection & session values
         #
         [conn, sess] = values
@@ -317,6 +327,7 @@ test('Router:RPC - should register, call, unregister', (assert)->
         session.register(registerURI, registeredFunction)
 
     ).then((registration)->
+
         # test the registration
         #
         assert.true(registration instanceof autobahn.Registration, 'the registration is the correct type')
@@ -347,7 +358,9 @@ test('Router:RPC - should register, call, unregister', (assert)->
             #
             Manager.closeConnection(connection)
         )
+
     ).then((closeReason)->
+
         # connection is closed - test the reason
         #
         assert.true(closeReason=='closed', 'correct close reason')
@@ -355,12 +368,12 @@ test('Router:RPC - should register, call, unregister', (assert)->
         # pause, then close the router
         #
         Manager.pause()
+
     ).then(()->
         # check to ensure the spy event was called exactly once & with the
         # correct arguments
         #
         assert.true(registeredFunction.callCount==1, 'the subscription function was called once')
-
         assert.true(registeredFunction.firstCall.args[0][0]=="#{testValue}", 'the correct argument was passed to the subscription')
     ).then(()->
         router.close()
@@ -368,6 +381,7 @@ test('Router:RPC - should register, call, unregister', (assert)->
         console.log('*************** ERROR', err)
         console.log(err.trace)
     ).finally(()->
+
         # all done, stop testing
         #
         assert.end()
@@ -375,5 +389,6 @@ test('Router:RPC - should register, call, unregister', (assert)->
         # signal the manager that we're done
         #
         mgr.end()
+
     ).done()
 )
