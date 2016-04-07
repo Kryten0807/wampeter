@@ -79,8 +79,11 @@ test('Router:Session - should establish a new session and close it', (assert)->
 
     router = null
 
-    Manager.createRouter(ROUTER_CONFIG).then((r)->
-        router = r
+    Manager.createRouter(ROUTER_CONFIG).then((rtr)->
+
+        # save the router object
+        #
+        router = rtr
 
         # @todo tests - invalid realm
         # @todo tests - missing realm
