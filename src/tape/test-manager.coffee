@@ -1,3 +1,7 @@
+Q = require('q')
+autobahn = require('autobahn')
+wampeter  = require('../lib/router')
+
 ###*
  * The TestManager class
  *
@@ -52,6 +56,50 @@ class TestManager
         console.log('+++ calling onComplete')
         @onComplete?()
 
-# export the class
-#
-module.exports = TestManager
+
+
+
+createRouter = (config)->
+    Q.fcall(
+        ()->
+            wampeter.createRouter(config)
+    )
+
+openConnection = (config)->
+    deferred = Q.defer()
+
+    connection = new autobahn.Connection(config)
+
+    connection.onopen = (session)-> deferred.resolve([connection, session])
+
+    connection.open()
+
+    deferred.promise
+
+
+closeConnection = (connection)->
+    deferred = Q.defer()
+
+    connection.onclose = (reason)-> deferred.resolve(reason)
+
+    connection.close()
+
+    deferred.promise
+
+pause = (timeout = 500)-> Q.delay(timeout)
+
+
+
+
+
+
+
+
+
+
+module.exports.TestManager = TestManager
+
+module.exports.createRouter = createRouter
+module.exports.openConnection = openConnection
+module.exports.closeConnection = closeConnection
+module.exports.pause = pause
