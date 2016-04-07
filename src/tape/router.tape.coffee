@@ -2,7 +2,10 @@ test = require('tape')
 
 autobahn = require('autobahn')
 
-TestManager = require('./test-manager')
+Manager = require('./test-manager')
+TestManager = Manager.TestManager
+
+
 wampeter  = require('../lib/router')
 
 config = require('./router-config')
@@ -56,42 +59,60 @@ test('Router#constructor - should instantiate a router', (assert)->
 
 
 test('Router:Session - should establish a new session and close it', (assert)->
+
     # signal the start of the test to the manager
     #
     mgr.start()
 
-    router = wampeter.createRouter(ROUTER_CONFIG)
+    router = null
 
-    connection = new autobahn.Connection({
-        realm: config.realm
-        url: 'ws://localhost:3000/wampeter'
-    })
+    Manager.createRouter(ROUTER_CONFIG).then((r)->
+        router = r
 
-    connection.onopen = (session)->
-        # test the session
+        Manager.openConnection({
+            realm: config.realm
+            url: 'ws://localhost:3000/wampeter'
+        })
+
+    ).then((values)->
+        # extract the connection & session values
+        #
+        [connection, session] = values
+
+        # connection is open - test some stuff
         #
         assert.true(session instanceof autobahn.Session, 'instance of autobahn.Session')
         assert.true(session.isOpen, 'session is open')
 
         # close the connection
         #
-        connection.close()
-
-    connection.onclose = (reason)->
-        assert.true(reason=='closed', 'correct close reason')
-
-        # pause, then close the router & clean up the test
+        Manager.closeConnection(connection)
+    ).then((closeReason)->
+        console.log('--- connection closed', closeReason)
+        # connection is closed - test the reason
         #
-        setTimeout((()->
-            # close the router
-            #
-            router.close().finally(()->
-                assert.end()
-                mgr.end()
-            ).done()
-        ), 500)
+        assert.true(closeReason=='closed', 'correct close reason')
 
-    connection.open()
+        # pause, then close the router
+        #
+        Manager.pause()
+    ).then(()->
+        console.log('--- closing router')
+        router.close()
+    ).catch((err)->
+        console.log('*************** ERROR', err)
+        console.log(err.trace)
+    ).finally(()->
+        console.log('--- cleaning up tests')
+        # all done, stop testing
+        #
+        assert.end()
+
+        # signal the manager that we're done
+        #
+        mgr.end()
+    ).done()
+
 )
 
 
