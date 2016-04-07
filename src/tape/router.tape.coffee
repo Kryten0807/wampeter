@@ -128,8 +128,9 @@ test('Router:Session - should establish a new session and close it', (assert)->
 )
 
 
-
-
+# @todo tests: subscribe failures
+# @todo tests: publish failures
+# @todo tests: unsubscribe failures
 
 test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
