@@ -1,7 +1,3 @@
-# dependencies
-#
-EventEmitter  = require('events').EventEmitter
-
 ###*
  * The TestManager class
  *
@@ -17,18 +13,22 @@ EventEmitter  = require('events').EventEmitter
  * decremented on test ends. When the test ends, it emits the `complete` event -
  * watch for this event and shut down with `process.exit()` when it happens.
 ###
-class TestManager extends EventEmitter
+class TestManager
     constructor: ()->
         # initialize the counter
         #
         @count = 0
+
+        @timer = null
 
     ###*
      * Record a test start
      *
      * @return {undefined}
     ###
-    start: ()=> @count++
+    start: ()=>
+        @count++
+        console.log("+++ test start #{@count}")
 
     ###*
      * Record a test end, signalling complete when all tests have finished
@@ -37,9 +37,20 @@ class TestManager extends EventEmitter
     ###
     end: ()=>
         @count--
+        console.log("+++ test end #{@count}")
 
         if @count==0
-            @emit('complete')
+            # start a timer to exit
+            #
+            setTimeout(@_complete, 1000)
+
+    _complete: ()=>
+        if @count>0
+            console.log('+++ not ready to call onComplete')
+            return
+
+        console.log('+++ calling onComplete')
+        @onComplete?()
 
 # export the class
 #
