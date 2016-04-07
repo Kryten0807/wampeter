@@ -121,11 +121,6 @@ test('Router:Session - should establish a new session and close it', (assert)->
 )
 
 
-# @todo tests: subscribe failures
-# @todo tests: publish failures
-# @todo tests: publish to unsubscribed topic
-# @todo tests: unsubscribe failures
-
 test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
     # signal the start of the test to the manager
@@ -144,6 +139,11 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
         router = rtr
+
+        # @todo tests - invalid realm
+        # @todo tests - missing realm
+        # @todo tests - invalid URL
+        # @todo tests - missing URL
 
         Manager.openConnection({
             realm: config.realm
@@ -172,6 +172,9 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
 
         subscriptionFunction = sinon.spy()
 
+        # @todo test - invalid topic
+        # @todo test - missing topic
+        # @todo test - invalid function
         session.subscribe(topic, subscriptionFunction)
 
     ).then((subscription)->
@@ -182,11 +185,19 @@ test('Router:PubSub - should subscribe, publish, unsubscribe', (assert)->
         assert.true(subscription.topic?, 'the topic exists')
         assert.true(subscription.topic==topic, 'the topic has the correct value')
 
+        # @todo test - invalid topic
+        # @todo test - missing topic
+        # @todo test - publish to unsubscribed topic
+        # @todo test - publish with acknowledgement
+
         # publish the value to the topic
         #
         session.publish(topic, [testValue])
 
         Manager.pause().then(()->
+
+            # @todo test - unsubscribe with invalid subscription
+
             # unsubscribe
             #
             session.unsubscribe(subscription)
@@ -276,6 +287,11 @@ test('Router:RPC - should register, call, unregister', (assert)->
         #
         registeredFunction = sinon.spy()
 
+        # @todo test - invalid URI
+        # @todo test - missing
+        # @todo test - invalid function
+        # @todo test - missing function
+
         session.register(registerURI, registeredFunction)
 
     ).then((registration)->
@@ -287,11 +303,19 @@ test('Router:RPC - should register, call, unregister', (assert)->
         assert.true(registration.procedure?, 'the procedure exists')
         assert.true(registration.procedure==registerURI, 'the procedure URI has the correct value')
 
+        # @todo test - invalid URI
+        # @todo test - missing URI
+        # @todo test - incorrect value
+
         # publish the value to the topic
         #
         session.call(registerURI, [testValue])
 
         Manager.pause().then(()->
+
+            # @todo test - invalid registration
+            # @todo test - missing registration
+
             # unsubscribe
             #
             session.unregister(registration)
