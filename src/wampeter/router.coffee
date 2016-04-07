@@ -190,7 +190,13 @@ class Router extends WebSocketServer
             throw new TypeError('wamp.error.invalid_uri')
 
 
+
+validateConfiguration = (config)->
+    config?.port? and _.isNumber(config.port)
+
+
+
+
 module.exports.Router = Router
-
-
+module.exports.validateConfiguration = validateConfiguration
 module.exports.createRouter = (opts)-> new Router(opts)
