@@ -28,7 +28,9 @@ tester = (desc, func)->
         mgr.end()
     )
 
-
+# ------------------------------------------------------------------------------
+# Ensure that the configuration includes a port value
+# ------------------------------------------------------------------------------
 tester('Minimal config - passes', (assert)->
     config =
         port: 3000
@@ -39,15 +41,45 @@ tester('Minimal config - passes', (assert)->
 tester('Minimal config - missing port', (assert)->
     config = {}
 
-    assert.false(check(config))
+    assert.throws((()-> check(config)), /Invalid port number/)
 )
 
-tester('Minimal config - invalid port', (assert)->
+tester('Minimal config - invalid port (string)', (assert)->
     config =
         port: 'not a port #'
 
-    assert.false(check(config))
+    assert.throws((()-> check(config)), /Invalid port number/)
 )
+
+tester('Minimal config - invalid port (float)', (assert)->
+    config =
+        port: 1.25
+
+    assert.throws((()-> check(config)), /Invalid port number/)
+)
+
+tester('Minimal config - invalid port (negative)', (assert)->
+    config =
+        port: -3
+
+    assert.throws((()-> check(config)), /Invalid port number/)
+)
+
+tester('Minimal config - invalid port (zero)', (assert)->
+    config =
+        port: 0
+
+    assert.throws((()-> check(config)), /Invalid port number/)
+)
+
+tester('Minimal config - invalid port (too big)', (assert)->
+    config =
+        port: 65536
+
+    assert.throws((()-> check(config)), /Invalid port number/)
+)
+
+# ------------------------------------------------------------------------------
 
 
 
