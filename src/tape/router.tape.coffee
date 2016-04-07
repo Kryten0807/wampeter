@@ -26,9 +26,7 @@ mgr = new TestManager()
 
 # when the manager signals "tests complete", wait 1/2 secound & exit
 #
-mgr.onComplete = ()->
-    console.log('---------- tests complete')
-    setTimeout((()-> process.exit()), 500)
+mgr.onComplete = ()-> Manager.pause().then(()-> process.exit())
 
 router = null
 
