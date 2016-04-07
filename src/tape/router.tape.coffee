@@ -21,10 +21,14 @@ mgr = new TestManager()
 
 # when the manager signals "tests complete", wait 1/2 secound & exit
 #
-mgr.on('complete', ()->
+mgr.onComplete = ()->
     console.log('---------- tests complete')
     setTimeout((()-> process.exit()), 500)
-)
+
+router = null
+
+
+
 
 test('Router#constructor - should instantiate a router', (assert)->
     # signal the start of the test to the manager
@@ -51,7 +55,7 @@ test('Router#constructor - should instantiate a router', (assert)->
 
 
 
-test('Router:Session - should establish a new session', (assert)->
+test('Router:Session - should establish a new session and close it', (assert)->
     # signal the start of the test to the manager
     #
     mgr.start()
@@ -64,68 +68,28 @@ test('Router:Session - should establish a new session', (assert)->
     })
 
     connection.onopen = (session)->
-        assert.true(session instanceof autobahn.Session, 'isntance of autobahn.Session')
+        # test the session
+        #
+        assert.true(session instanceof autobahn.Session, 'instance of autobahn.Session')
         assert.true(session.isOpen, 'session is open')
 
-        # close the router
+        # close the connection
         #
-        router.close().finally(()->
-            mgr.end()
-            assert.end()
-        ).done()
+        connection.close()
+
+    connection.onclose = (reason)->
+        assert.true(reason=='closed', 'correct close reason')
+
+        # pause, then close the router & clean up the test
+        #
+        setTimeout((()->
+            # close the router
+            #
+            router.close().finally(()->
+                assert.end()
+                mgr.end()
+            ).done()
+        ), 500)
 
     connection.open()
 )
-
-###
-
-describe('Router:Session', ()->
-
-    router = null
-    connection = null
-    session = null
-
-    before((done_func)->
-        done = D(done_func)
-
-        router = wampeter.createRouter(ROUTER_CONFIG)
-
-        setTimeout((()-> done()), CLEANUP_DELAY)
-    )
-
-    after((done_func)->
-        done = D(done_func)
-
-        setTimeout((()-> router.close().then(done).catch(done).done()), CLEANUP_DELAY)
-    )
-
-    it('should establish a new session', (done_func)->
-        done = D(done_func)
-
-        connection = new autobahn.Connection({
-            realm: 'com.to.inge.world'
-            url: 'ws://localhost:3000/wampeter'
-        })
-
-        connection.onopen = (s)->
-            expect(s).to.be.an.instanceof(autobahn.Session)
-            expect(s.isOpen).to.be.true
-            session = s
-            done()
-
-        connection.open()
-    )
-
-    it('should close a session', (done_func)->
-        done = D(done_func)
-
-        expect(connection).to.be.an.instanceof(autobahn.Connection)
-
-        connection.onclose = (reason)->
-            expect(reason).to.be.equal('closed')
-            done()
-
-        connection.close()
-    )
-)
-###
