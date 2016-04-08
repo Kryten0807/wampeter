@@ -44,9 +44,7 @@ test('Port configuration', (assert)->
 # - must be a fragment of a path, starting with `/`
 # ------------------------------------------------------------------------------
 test('Path configuration', (assert)->
-    config =
-        port: 3000
-
+    config = {port: 3000}
     assert.true(check(config), 'missing path')
 
     config.path = ''
