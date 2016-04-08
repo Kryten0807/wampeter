@@ -26,10 +26,10 @@ REALM_URI =     Cfg.realm
 ROLE = Cfg.role
 
 VALID_AUTHID =  Cfg.valid_authid
-VALID_KEY =     Cfg.valid_key
+VALID_SECRET =     Cfg.valid_secret
 
 INVALID_AUTHID = 'david.hasselhoff'
-INVALID_KEY = 'xyz789'
+INVALID_SECRET = 'xyz789'
 
 
 describe('Router:Static Authorization PUBLISH', ()->
@@ -58,7 +58,7 @@ describe('Router:Static Authorization PUBLISH', ()->
 
             # respond to the challenge
             #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_SECRET, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: REALM_URI

@@ -22,11 +22,11 @@ Cfg = require('./router-config')
 ROUTER_CONFIG = Cfg.static
 REALM_URI =     Cfg.realm
 
-VALID_AUTHID =  Cfg.valid_authid
-VALID_KEY =     Cfg.valid_key
+VALID_AUTHID = Cfg.valid_authid
+VALID_SECRET = Cfg.valid_secret
 
 INVALID_AUTHID = 'david.hasselhoff'
-INVALID_KEY = 'xyz789'
+INVALID_SECRET = 'xyz789'
 
 
 describe('Router:Static WAMP-CRA Successes', ()->
@@ -60,7 +60,7 @@ describe('Router:Static WAMP-CRA Successes', ()->
 
             # respond to the challenge
             #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_SECRET, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: 'com.to.inge.world'
@@ -114,7 +114,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
             # respond to the challenge - SIGN WITH THE INVALID KEY!
             #
-            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(INVALID_SECRET, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: REALM_URI
@@ -145,7 +145,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
             # respond to the challenge - SIGN WITH THE INVALID KEY!
             #
-            autobahn.auth_cra.sign(INVALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(INVALID_SECRET, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: REALM_URI
@@ -178,7 +178,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
             # respond to the challenge - SIGN THE WRONG CHALLENGE!
             #
-            autobahn.auth_cra.sign(VALID_KEY, {a:1, b:2})
+            autobahn.auth_cra.sign(VALID_SECRET, {a:1, b:2})
 
         connection = new autobahn.Connection({
             realm: REALM_URI
@@ -210,7 +210,7 @@ describe('Router:Static WAMP-CRA Failures', ()->
 
             # respond to the challenge - CORRECT KEY, BUT WRONG USER!
             #
-            autobahn.auth_cra.sign(VALID_KEY, extra.challenge)
+            autobahn.auth_cra.sign(VALID_SECRET, extra.challenge)
 
         connection = new autobahn.Connection({
             realm: REALM_URI
