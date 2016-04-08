@@ -3,6 +3,14 @@ _ = require('lodash')
 
 isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 
+###*
+ * Check a number to see if it's a valid port number (ie. an integer in the
+ * range [1, 65535])
+ *
+ * @param  {Mixed} p The value to check
+ *
+ * @return {Boolean} True if it's a valid port number, false otherwise
+###
 isValidPort = (p)->
     p? and _.isNumber(p) and 1<=p<=65535 and Math.floor(p)==p
 
