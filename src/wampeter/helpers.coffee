@@ -3,9 +3,11 @@ _ = require('lodash')
 
 isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 
+isValidPort = (p)->
+    p? and _.isNumber(p) and 1<=p<=65535 and Math.floor(p)==p
 
 validateConfiguration = (config)->
-    if not config?.port? or not _.isNumber(config.port) or config.port<1 or config.port>65535 or Math.floor(config.port)!=config.port
+    if not isValidPort(config.port)
         throw new TypeError('Invalid port number')
 
     if config.path?
