@@ -14,13 +14,14 @@ isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 isValidPort = (p)->
     p? and _.isInteger(p) and 1<=p<=65535
 
+isValidPath = (p)-> /^(\/[a-z0-9\._-]+)*(\/)?$/i.test(p)
 
 validateConfiguration = (config)->
     if not isValidPort(config.port)
         throw new TypeError('Invalid port number')
 
     if config.path?
-        if not /^(\/[a-z0-9\._-]+)*(\/)?$/i.test(config.path)
+        if not isValidPath(config.path)
             throw new TypeError('Invalid path')
 
     # validate realms
