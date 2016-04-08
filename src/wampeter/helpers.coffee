@@ -59,6 +59,51 @@ isValidRealm = (config, identifier)->
         _.forEach(config.roles, isValidRole)
 
 
+
+
+
+
+
+
+
+isValidWAMPCRAStaticUsers = (users)->
+    # we must have a list of users
+    #
+    if not users?
+        throw new TypeError('Invalid WAMP-CRA configuration - missing user list')
+
+    # users must be an object - a hash mapping user ID to parameters
+    #
+    if not _.isPlainObject(users)
+        throw new TypeError('Invalid WAMP-CRA configuration - invalid user list')
+
+    # validate each user - each one must have a secret and role
+    #
+    _.forEach(users, (value, key)->
+        # is the value an object? if not, then fail
+        #
+        if not _.isPlainObject(value)
+            throw new TypeError('Invalid WAMP-CRA configuration - invalid user')
+
+        if not value.secret?
+            throw new TypeError('Invalid WAMP-CRA configuration - missing user secret')
+
+        if not _.isString(value.secret) and not _.isNumber(value.secret)
+            throw new TypeError('Invalid WAMP-CRA configuration - invalid user secret')
+
+        if not value.role?
+            throw new TypeError('Invalid WAMP-CRA configuration - missing user role')
+
+        if not _.isString(value.role) and not _.isNumber(value.role)
+            throw new TypeError('Invalid WAMP-CRA configuration - invalid user role')
+
+    )
+
+
+
+
+
+
 ###*
  * Check a string to ensure that it's a valid path
  *
@@ -101,37 +146,6 @@ validateConfiguration = (config)->
             throw new TypeError('Invalid WAMP-CRA configuration - missing type')
 
         if config.wampcra.type=='static'
-            # we must have a list of users
-            #
-            if not config.wampcra.users?
-                throw new TypeError('Invalid WAMP-CRA configuration - missing user list')
-
-            # users must be an object - a hash mapping user ID to parameters
-            #
-            if not _.isPlainObject(config.wampcra.users)
-                throw new TypeError('Invalid WAMP-CRA configuration - invalid user list')
-
-            # validate each user - each one must have a secret and role
-            #
-            _.forEach(config.wampcra.users, (value, key)->
-                # is the value an object? if not, then fail
-                #
-                if not _.isPlainObject(value)
-                    throw new TypeError('Invalid WAMP-CRA configuration - invalid user')
-
-                if not value.secret?
-                    throw new TypeError('Invalid WAMP-CRA configuration - missing user secret')
-
-                if not _.isString(value.secret) and not _.isNumber(value.secret)
-                    throw new TypeError('Invalid WAMP-CRA configuration - invalid user secret')
-
-                if not value.role?
-                    throw new TypeError('Invalid WAMP-CRA configuration - missing user role')
-
-                if not _.isString(value.role) and not _.isNumber(value.role)
-                    throw new TypeError('Invalid WAMP-CRA configuration - invalid user role')
-
-            )
 
         else if config.wampcra.type=='dynamic'
             # we must have an authenticator function
