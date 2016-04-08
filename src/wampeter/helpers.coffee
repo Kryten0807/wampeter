@@ -14,6 +14,13 @@ isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 isValidPort = (p)->
     p? and _.isInteger(p) and 1<=p<=65535
 
+###*
+ * Check a string to ensure that it's a valid path
+ *
+ * @param  {String}  p The string to check
+ *
+ * @return {Boolean}   True if it's a valid path, false otherwise
+###
 isValidPath = (p)-> /^(\/[a-z0-9\._-]+)*(\/)?$/i.test(p)
 
 validateConfiguration = (config)->
