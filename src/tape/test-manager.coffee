@@ -86,7 +86,7 @@ openConnection = (config)->
 closeConnection = (connection)->
     deferred = Q.defer()
 
-    connection.onclose = (reason)-> deferred.resolve(reason)
+    connection.onclose = (reason, message)-> deferred.resolve(reason)
 
     connection.close()
 
