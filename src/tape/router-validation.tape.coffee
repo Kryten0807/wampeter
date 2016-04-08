@@ -214,3 +214,125 @@ test('Realms configuration', (assert)->
 
     assert.end()
 )
+
+
+# ------------------------------------------------------------------------------
+# Ensure that the WAMP_CRA configuration is correct for static authentication
+# ------------------------------------------------------------------------------
+test('Static WAMP-CRA configuration', (assert)->
+
+    config =
+        port: 3000
+
+    assert.true(check(config), 'missing wamp-cra config')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1':
+                secret: 'abcdef'
+                role: 'role01'
+            'user-2':
+                secret: '123456'
+                role: 'role02'
+
+    assert.true(check(config), 'valid wamp-cra config')
+
+    config.wampcra =
+        # type: 'static'
+        users:
+            'user-id':
+                secret: 'abcdef'
+                role: 'role01'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing type/, 'missing type')
+
+    config.wampcra =
+        type: 'something-that-is-not-static-or-dynamic'
+        users:
+            'user-id':
+                secret: 'abcdef'
+                role: 'role01'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid type/, 'invalid type')
+
+    config.wampcra =
+        type: 'static'
+        # users:
+        #     'user-id':
+        #         secret: 'abcdef'
+        #         role: 'role01'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user list/, 'missing users')
+
+    config.wampcra =
+        type: 'static'
+        users: 42
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user list/, 'invalid users - scalar')
+
+    config.wampcra =
+        type: 'static'
+        users: [1,2,3]
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user list/, 'invalid users - array')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1': 'this is not an object'
+            'user-2':
+                secret: '123456'
+                role: 'role02'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user/, 'invalid user - scalar value')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-2':
+                secret: '123456'
+                role: 'role02'
+            'user-1': [1, 2]
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user/, 'invalid user - scalar value')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1':
+                # secret: 'abcdef'
+                role: 'role01'
+            'user-2':
+                secret: '123456'
+                role: 'role02'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user secret/, 'invalid user - missing secret')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1':
+                secret: '123456'
+                role: 'role01'
+            'user-2':
+                secret: {a: 1}
+                role: 'role02'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user secret/, 'invalid user - invalid secret')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1':
+                secret: '123456'
+                # role: 'role01'
+            'user-2':
+                secret: 'abcdef'
+                role: 'role02'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user role/, 'invalid user - missing role')
+
+    config.wampcra =
+        type: 'static'
+        users:
+            'user-1':
+                secret: '123456'
+                role: 'role01'
+            'user-2':
+                secret: 'abcdef'
+                role: ['this', 'should', 'be', 'scalar']
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user role/, 'invalid user - invalid role')
+
+    assert.end()
+)
