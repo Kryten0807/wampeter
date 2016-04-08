@@ -179,18 +179,44 @@ test('Realms configuration', (assert)->
                 'role_4': samplePermissions
     assert.throws((()-> check(config)), /Invalid realm/, 'invalid realm identifier with multiple realms')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles: 42
+    assert.throws((()-> check(config)), /Invalid roles/, 'invalid roles - number')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles: 'this is a string'
+    assert.throws((()-> check(config)), /Invalid roles/, 'invalid roles - string')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles: [1,2,3]
+    assert.throws((()-> check(config)), /Invalid roles/, 'invalid roles - array')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles:
+                'this is not a valid role': samplePermissions
+    assert.throws((()-> check(config)), /Invalid role/, 'invalid role identifier')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles:
+                'myrole': 42
+    assert.throws((()-> check(config)), /Invalid permissions/, 'invalid permissions - number')
 
+    config.realms =
+        'com.realms.myrealm':
+            roles:
+                'myrole': 'a string'
+    assert.throws((()-> check(config)), /Invalid permissions/, 'invalid permissions - string')
 
-
-
-
-
-
-
+    config.realms =
+        'com.realms.myrealm':
+            roles:
+                'myrole': ['an', 'array']
+    assert.throws((()-> check(config)), /Invalid permissions/, 'invalid permissions - array')
 
     assert.end()
 )
