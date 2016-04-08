@@ -26,13 +26,12 @@ ROUTER_CONFIG =
     realms:
         "#{REALM_URI}":
             roles:
-                "#{ROLE}": {
-                    # permissions go here
-                    call: false
-                    register: false
-                    subscribe: true
-                    publish: false
-                }
+                "#{ROLE}":
+                    '*':
+                        call: true
+                        register: false
+                        subscribe: false
+                        publish: false
 
 
 
