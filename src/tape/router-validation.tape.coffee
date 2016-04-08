@@ -4,8 +4,8 @@ Manager = require('./test-manager')
 TestManager = Manager.TestManager
 mgr = new TestManager()
 
-wampeter  = require('../lib/router')
-check = wampeter.validateConfiguration
+helper  = require('../lib/helper')
+check = helper.validateConfiguration
 
 
 
