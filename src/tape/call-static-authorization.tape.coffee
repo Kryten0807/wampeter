@@ -259,8 +259,6 @@ configuration[5] =
 
         ROUTER_CONFIG.realms[REALM_URI].roles[ROLE] = config
 
-        console.log('---------------------------------------- configuration', ROUTER_CONFIG.realms[REALM_URI].roles)
-
         onChallenge = (session, method, extra)->
             assert.true(method=='wampcra')
 
@@ -305,8 +303,6 @@ configuration[5] =
             )
 
         ).then((result)->
-
-            console.log('-------------- after session call', result)
 
             assert.true(_.isUndefined(result), 'no result received')
             # close the connection
