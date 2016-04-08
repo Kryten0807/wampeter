@@ -56,6 +56,8 @@ isValidRealm = (config, identifier)->
 isValidPath = (p)-> /^(\/[a-z0-9\._-]+)*(\/)?$/i.test(p)
 
 validateConfiguration = (config)->
+    # check the port - must be an integer in the range [1, 65535]
+    #
     if not isValidPort(config.port)
         throw new TypeError('Invalid port number')
 
