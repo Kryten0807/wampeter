@@ -44,9 +44,15 @@ class TestManager
         console.log("+++ test end #{@count}")
 
         if @count==0
+            # if there's already a timer, then kill it & start a new one
+            #
+            if @timer?
+                clearTimeout(@timer)
+                @timer = null
+
             # start a timer to exit
             #
-            setTimeout(@_complete, 1000)
+            @timer = setTimeout(@_complete, 1000)
 
     _complete: ()=>
         if @count>0
