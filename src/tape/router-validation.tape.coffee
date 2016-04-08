@@ -1,7 +1,7 @@
 test = require('tape')
 
-helper  = require('../lib/helper')
-check = helper.validateConfiguration
+helpers  = require('../lib/helpers')
+check = helpers.validateConfiguration
 
 # ------------------------------------------------------------------------------
 # Ensure that the configuration includes a port value
