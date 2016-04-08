@@ -16,7 +16,7 @@ test:
 	@echo "************************"
 	@echo "* TEST LIBRARY         *"
 	@echo "************************"
-	@./test.sh
+	@./node_modules/.bin/tape test/*.tape.js | faucet
 
 docs:
 	@echo "************************"
