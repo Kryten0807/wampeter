@@ -114,16 +114,7 @@ test('Static WAMP-CRA : establish a new session', (assert)->
         mgr.end()
 
     ).done()
-
-
-
 )
-
-
-
-
-
-
 
 
 # ------------------------------------------------------------------------------
@@ -137,14 +128,12 @@ test('Static WAMP-CRA : fail to establish a new session - invalid authid', (asse
 
     router = null
 
-
     onChallenge = (session, method, extra)->
         assert.true(method=='wampcra')
 
         # respond to the challenge
         #
         autobahn.auth_cra.sign(VALID_SECRET, extra.challenge)
-
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
 
@@ -211,10 +200,6 @@ test('Static WAMP-CRA : fail to establish a new session - invalid authid', (asse
 )
 
 
-
-
-
-
 # ------------------------------------------------------------------------------
 # Fail to establish a new session - invalid secret
 # ------------------------------------------------------------------------------
@@ -226,14 +211,12 @@ test('Static WAMP-CRA : fail to establish a new session - invalid secret', (asse
 
     router = null
 
-
     onChallenge = (session, method, extra)->
         assert.true(method=='wampcra')
 
         # respond to the challenge
         #
         autobahn.auth_cra.sign(INVALID_SECRET, extra.challenge)
-
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
 
@@ -300,9 +283,6 @@ test('Static WAMP-CRA : fail to establish a new session - invalid secret', (asse
 )
 
 
-
-
-
 # ------------------------------------------------------------------------------
 # Fail to establish a new session - invalid authid & secret
 # ------------------------------------------------------------------------------
@@ -314,14 +294,12 @@ test('Static WAMP-CRA : fail to establish a new session - invalid authid & secre
 
     router = null
 
-
     onChallenge = (session, method, extra)->
         assert.true(method=='wampcra')
 
         # respond to the challenge
         #
         autobahn.auth_cra.sign(INVALID_SECRET, extra.challenge)
-
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
 
@@ -388,11 +366,6 @@ test('Static WAMP-CRA : fail to establish a new session - invalid authid & secre
 )
 
 
-
-
-
-
-
 # ------------------------------------------------------------------------------
 # Fail to establish a new session - onChallenge fails to sign correctly
 # ------------------------------------------------------------------------------
@@ -404,14 +377,12 @@ test('Static WAMP-CRA : fail to establish a new session - onChallenge failure', 
 
     router = null
 
-
     onChallenge = (session, method, extra)->
         assert.true(method=='wampcra')
 
         # respond to the challenge
         #
         autobahn.auth_cra.sign(VALID_SECRET, {msg: 'this is not the challenge object!'})
-
 
     Manager.createRouter(ROUTER_CONFIG).then((rtr)->
 
