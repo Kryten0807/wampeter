@@ -336,3 +336,35 @@ test('Static WAMP-CRA configuration', (assert)->
 
     assert.end()
 )
+
+
+# ------------------------------------------------------------------------------
+# Ensure that the WAMP_CRA configuration is correct for dynamic authentication
+# ------------------------------------------------------------------------------
+test('Dynamic WAMP-CRA configuration', (assert)->
+
+    authenticator = ()->
+
+    config =
+        port: 3000
+
+    assert.true(check(config), 'missing wamp-cra config')
+
+    config.wampcra =
+        type: 'dynamic'
+        authenticator: authenticator
+
+    assert.true(check(config), 'valid wamp-cra config')
+
+    config.wampcra =
+        type: 'dynamic'
+        # authenticator: authenticator
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing authenticator/, 'missing authenticator')
+
+    config.wampcra =
+        type: 'dynamic'
+        authenticator: 'this really should be a function'
+    assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid authenticator/, 'invalid authenticator')
+
+    assert.end()
+)
