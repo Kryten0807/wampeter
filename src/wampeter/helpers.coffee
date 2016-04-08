@@ -14,6 +14,38 @@ isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 isValidPort = (p)->
     p? and _.isInteger(p) and 1<=p<=65535
 
+
+###*
+ * Check that the identifier & config describe a valid realm
+ *
+ * @param  {Object}  config     The configuration object
+ * @param  {String}  identifier The realm identifier
+ *
+ * @return {Boolean}            True if the realm is valid, false otherwise
+ *
+ * @throws {TypeError} if the realm configuration or identifier are not valid
+###
+isValidRealm = (config, identifier)->
+    if not isUri(identifier)
+        throw new TypeError('Invalid realm identifier')
+
+    if config.roles?
+        if not _.isPlainObject(config.roles)
+            throw new TypeError('Invalid roles')
+
+        # check the role identifiers & permissions
+        #
+        _.forEach(config.roles, (v, k)->
+            # check the identifier
+            #
+            if not isUri(k)
+                throw new TypeError('Invalid role')
+
+            if not _.isPlainObject(v)
+                throw new TypeError('Invalid permissions')
+        )
+
+
 ###*
  * Check a string to ensure that it's a valid path
  *
