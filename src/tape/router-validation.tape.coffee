@@ -55,23 +55,26 @@ test('Path config - passes', (assert)->
 
     assert.true(check(config), 'missing path')
 
+    config.path = ''
+    assert.true(check(config), 'empty path')
+
     config.path = '/test'
     assert.true(check(config), 'simple path')
 
     config.path = 'test'
-    assert.throws(check(config), /Invalid path/, 'missing leading slash')
+    assert.throws((()-> check(config)), /Invalid path/, 'missing leading slash')
 
+    config.path = '//'
+    assert.throws((()-> check(config)), /Invalid path/, 'multiple adjacent slashes')
 
+    config.path = 3.14159
+    assert.throws((()-> check(config)), /Invalid path/, 'number')
 
+    config.path = {a: 1}
+    assert.throws((()-> check(config)), /Invalid path/, 'object')
 
-
-
-
-
-
-
-
-
+    config.path = [1, 2, 3]
+    assert.throws((()-> check(config)), /Invalid path/, 'array')
 
     assert.end()
 )
