@@ -86,6 +86,14 @@ test('Path configuration', (assert)->
 # Ensure that realms configuration is valid
 # ------------------------------------------------------------------------------
 test('Realms configuration', (assert)->
+
+    samplePermissions =
+        call: true
+        register: false
+        subscribe: true
+        publish: false
+
+
     config =
         port: 3000
 
@@ -120,53 +128,25 @@ test('Realms configuration', (assert)->
     config.realms =
         'com.realms.myrealm':
             roles:
-                'role_1':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
+                'role_1': samplePermissions
     assert.true(check(config), 'valid realm, single role, with permissions')
 
     config.realms =
         'com.realms.myrealm':
             roles:
-                'role_1':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
-                'role_2':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
+                'role_1': samplePermissions
+                'role_2': samplePermissions
     assert.true(check(config), 'valid realm, multiple roles, with permissions')
 
     config.realms =
         'com.realms.first':
             roles:
-                'role_1':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
-                'role_2':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
+                'role_1': samplePermissions
+                'role_2': samplePermissions
         'com.realms.second':
             roles:
-                'role_3':
-                    call: false
-                    register: true
-                    subscribe: false
-                    publish: true
-                'role_4':
-                    call: false
-                    register: true
-                    subscribe: false
-                    publish: true
+                'role_3': samplePermissions
+                'role_4': samplePermissions
     assert.true(check(config), 'multiple realms, multiple roles, with permissions')
 
 
@@ -184,37 +164,20 @@ test('Realms configuration', (assert)->
     config.realms =
         'this_is_+_not_a_uri':
             roles:
-                'role_1':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
+                'role_1': samplePermissions
     assert.throws((()-> check(config)), /Invalid realm/, 'invalid realm identifier')
 
     config.realms =
         'com.realms.first':
             roles:
-                'role_1':
-                    call: true
-                    register: false
-                    subscribe: true
-                    publish: false
+                'role_1': samplePermissions
         'some other realm that is not valid':
             roles:
-                'role_3':
-                    call: false
-                    register: true
-                    subscribe: false
-                    publish: true
+                'role_3': samplePermissions
         'com.realms.second':
             roles:
-                'role_4':
-                    call: false
-                    register: true
-                    subscribe: false
-                    publish: true
+                'role_4': samplePermissions
     assert.throws((()-> check(config)), /Invalid realm/, 'invalid realm identifier with multiple realms')
-
 
 
 
