@@ -12,7 +12,8 @@ isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
  * @return {Boolean} True if it's a valid port number, false otherwise
 ###
 isValidPort = (p)->
-    p? and _.isNumber(p) and 1<=p<=65535 and Math.floor(p)==p
+    p? and _.isInteger(p) and 1<=p<=65535
+
 
 validateConfiguration = (config)->
     if not isValidPort(config.port)
