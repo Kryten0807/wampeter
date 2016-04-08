@@ -14,7 +14,7 @@ test('Port configuration', (assert)->
 
 
     config = {}
-    assert.throws((()-> check(config)), /Invalid port number/)
+    assert.throws((()-> check(config)), /Invalid port number/, 'empty config')
 
 
     config = {port: 'not a port #'}
