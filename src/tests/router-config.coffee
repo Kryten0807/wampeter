@@ -28,6 +28,10 @@ ROUTER_CONFIG =
             roles:
                 "#{ROLE}": {
                     # permissions go here
+                    call: false
+                    register: false
+                    subscribe: true
+                    publish: false
                 }
 
 
