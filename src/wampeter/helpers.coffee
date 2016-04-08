@@ -15,6 +15,18 @@ isValidPort = (p)->
     p? and _.isInteger(p) and 1<=p<=65535
 
 
+
+
+
+isValidRole = (config, identifier)->
+    if not isUri(identifier)
+        throw new TypeError('Invalid role')
+
+    if not _.isPlainObject(config)
+        throw new TypeError('Invalid permissions')
+
+
+
 ###*
  * Check that the identifier & config describe a valid realm
  *
