@@ -47,8 +47,7 @@ isValidRealm = (config, identifier)->
 
         # check the role identifiers & permissions
         #
-        _.forEach(config.roles, (v, k)->
-        )
+        _.forEach(config.roles, isValidRole)
 
 
 ###*
