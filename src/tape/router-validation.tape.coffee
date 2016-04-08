@@ -58,7 +58,10 @@ test('Path configuration', (assert)->
     config.path = 42
     assert.throws((()-> check(config)), /Invalid path/, 'number')
 
-    config.path = {}
+    config.path = {a: 1}
+    assert.throws((()-> check(config)), /Invalid path/, 'object')
+
+    config.path = [1, 2]
     assert.throws((()-> check(config)), /Invalid path/, 'object')
 
     config.path = 'test'
