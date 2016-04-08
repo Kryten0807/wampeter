@@ -111,10 +111,6 @@ isValidWAMPCRAStaticUsers = (users)->
 
     true
 
-
-
-
-
 ###*
  * Check a string to ensure that it's a valid path
  *
@@ -124,6 +120,15 @@ isValidWAMPCRAStaticUsers = (users)->
 ###
 isValidPath = (p)-> /^(\/[a-z0-9\._-]+)*(\/)?$/i.test(p)
 
+###*
+ * Validate the router configuration
+ *
+ * @param  {Object} config The router configuration to validate
+ *
+ * @return {Boolean}       True if the configuration is valid
+ *
+ * @throws {TypeError} if the configuration is not valid
+###
 validateConfiguration = (config)->
     # check the port - must be an integer in the range [1, 65535]
     #
@@ -170,11 +175,14 @@ validateConfiguration = (config)->
         else
             throw new TypeError('Invalid WAMP-CRA configuration - invalid type')
 
-
-
-
-
     true
+
+
+
+
+
+
+
 
 module.exports.validateConfiguration = validateConfiguration
 module.exports.isUri = isUri
