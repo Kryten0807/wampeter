@@ -62,7 +62,7 @@ test('Path configuration', (assert)->
     assert.throws((()-> check(config)), /Invalid path/, 'object')
 
     config.path = [1, 2]
-    assert.throws((()-> check(config)), /Invalid path/, 'object')
+    assert.throws((()-> check(config)), /Invalid path/, 'array')
 
     config.path = 'test'
     assert.throws((()-> check(config)), /Invalid path/, 'missing leading slash')
