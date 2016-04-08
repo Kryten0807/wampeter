@@ -7,7 +7,7 @@ check = helpers.validateConfiguration
 # Ensure that the configuration includes a port value
 # - must be an integer in the range [1, 65535]
 # ------------------------------------------------------------------------------
-test('Minimal config', (assert)->
+test('Port configuration', (assert)->
 
     config =
         port: 3000
@@ -49,7 +49,7 @@ test('Minimal config', (assert)->
 # Ensure that the (optional) path value is valid
 # - must be a fragment of a path, starting with `/`
 # ------------------------------------------------------------------------------
-test('Path config - passes', (assert)->
+test('Path configuration', (assert)->
     config =
         port: 3000
 
