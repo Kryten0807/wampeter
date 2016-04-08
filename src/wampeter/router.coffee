@@ -15,10 +15,6 @@ helpers = require('./helpers')
 
 class Router extends WebSocketServer
     constructor: (opts)->
-        # validate the options
-        #
-        helpers.validateConfiguration(opts)
-
         # retrieve configuration and update with default values
         #
         @config = new CConf('router', [], {
@@ -199,4 +195,9 @@ class Router extends WebSocketServer
 
 
 module.exports.Router = Router
-module.exports.createRouter = (opts)-> new Router(opts)
+module.exports.createRouter = (opts)->
+    # validate the options
+    #
+    helpers.validateConfiguration(opts)
+
+    new Router(opts)
