@@ -146,6 +146,7 @@ validateConfiguration = (config)->
             throw new TypeError('Invalid WAMP-CRA configuration - missing type')
 
         if config.wampcra.type=='static'
+            isValidWAMPCRAStaticUsers(config.wampcra.users)
 
         else if config.wampcra.type=='dynamic'
             # we must have an authenticator function
