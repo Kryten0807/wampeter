@@ -27,9 +27,8 @@ validateConfiguration = (config)->
     if not isValidPort(config.port)
         throw new TypeError('Invalid port number')
 
-    if config.path?
-        if not isValidPath(config.path)
-            throw new TypeError('Invalid path')
+    if config.path? and isValidPath(config.path)
+        throw new TypeError('Invalid path')
 
     # validate realms
     #
