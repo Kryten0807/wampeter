@@ -9,8 +9,7 @@ check = helpers.validateConfiguration
 # ------------------------------------------------------------------------------
 test('Port configuration', (assert)->
 
-    config =
-        port: 3000
+    config = {port: 3000}
     assert.true(check(config), 'valid port')
 
 
@@ -18,28 +17,23 @@ test('Port configuration', (assert)->
     assert.throws((()-> check(config)), /Invalid port number/)
 
 
-    config =
-        port: 'not a port #'
+    config = {port: 'not a port #'}
     assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (string)')
 
 
-    config =
-        port: 1.25
+    config = {port: 1.25}
     assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (float)')
 
 
-    config =
-        port: -3
+    config = {port: -3}
     assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (negative)')
 
 
-    config =
-        port: 0
+    config = {port: 0}
     assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (zero)')
 
 
-    config =
-        port: 65536
+    config = {port: 65536}
     assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (too big)')
 
     assert.end()
