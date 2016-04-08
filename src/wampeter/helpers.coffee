@@ -36,13 +36,6 @@ isValidRealm = (config, identifier)->
         # check the role identifiers & permissions
         #
         _.forEach(config.roles, (v, k)->
-            # check the identifier
-            #
-            if not isUri(k)
-                throw new TypeError('Invalid role')
-
-            if not _.isPlainObject(v)
-                throw new TypeError('Invalid permissions')
         )
 
 
