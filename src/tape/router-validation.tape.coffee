@@ -230,10 +230,11 @@ test('Static WAMP-CRA configuration', (assert)->
 
     config =
         port: 3000
+        auth: {}
 
     assert.true(check(config), 'missing wamp-cra config')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1':
@@ -245,7 +246,7 @@ test('Static WAMP-CRA configuration', (assert)->
 
     assert.true(check(config), 'valid wamp-cra config')
 
-    config.wampcra =
+    config.auth.wampcra =
         # type: 'static'
         users:
             'user-id':
@@ -253,7 +254,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role01'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing type/, 'missing type')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'something-that-is-not-static-or-dynamic'
         users:
             'user-id':
@@ -261,7 +262,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role01'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid type/, 'invalid type')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         # users:
         #     'user-id':
@@ -269,17 +270,17 @@ test('Static WAMP-CRA configuration', (assert)->
         #         role: 'role01'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user list/, 'missing users')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users: 42
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user list/, 'invalid users - scalar')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users: [1,2,3]
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user list/, 'invalid users - array')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1': 'this is not an object'
@@ -288,7 +289,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role02'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user/, 'invalid user - scalar value')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-2':
@@ -297,7 +298,7 @@ test('Static WAMP-CRA configuration', (assert)->
             'user-1': [1, 2]
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user/, 'invalid user - scalar value')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1':
@@ -308,7 +309,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role02'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user secret/, 'invalid user - missing secret')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1':
@@ -319,7 +320,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role02'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid user secret/, 'invalid user - invalid secret')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1':
@@ -330,7 +331,7 @@ test('Static WAMP-CRA configuration', (assert)->
                 role: 'role02'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing user role/, 'invalid user - missing role')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'static'
         users:
             'user-1':
@@ -354,21 +355,22 @@ test('Dynamic WAMP-CRA configuration', (assert)->
 
     config =
         port: 3000
+        auth: {}
 
     assert.true(check(config), 'missing wamp-cra config')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'dynamic'
         authenticator: authenticator
 
     assert.true(check(config), 'valid wamp-cra config')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'dynamic'
         # authenticator: authenticator
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - missing authenticator/, 'missing authenticator')
 
-    config.wampcra =
+    config.auth.wampcra =
         type: 'dynamic'
         authenticator: 'this really should be a function'
     assert.throws((()-> check(config)), /Invalid WAMP-CRA configuration - invalid authenticator/, 'invalid authenticator')
