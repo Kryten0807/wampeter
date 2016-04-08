@@ -7,60 +7,71 @@ check = helper.validateConfiguration
 # Ensure that the configuration includes a port value
 # - must be an integer in the range [1, 65535]
 # ------------------------------------------------------------------------------
-test('Minimal config - passes', (assert)->
+test('Minimal config', (assert)->
+
+    config =
+        port: 3000
+    assert.true(check(config), 'valid port')
+
+
+    config = {}
+    assert.throws((()-> check(config)), /Invalid port number/)
+
+
+    config =
+        port: 'not a port #'
+    assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (string)')
+
+
+    config =
+        port: 1.25
+    assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (float)')
+
+
+    config =
+        port: -3
+    assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (negative)')
+
+
+    config =
+        port: 0
+    assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (zero)')
+
+
+    config =
+        port: 65536
+    assert.throws((()-> check(config)), /Invalid port number/, 'invalid port (too big)')
+
+    assert.end()
+)
+
+# ------------------------------------------------------------------------------
+# Ensure that the (optional) path value is valid
+# - must be a fragment of a path, starting with `/`
+# ------------------------------------------------------------------------------
+test('Path config - passes', (assert)->
     config =
         port: 3000
 
-    assert.true(check(config))
+    assert.true(check(config), 'missing path')
+
+    config.path = '/test'
+    assert.true(check(config), 'simple path')
+
+    config.path = 'test'
+    assert.throws(check(config), /Invalid path/, 'missing leading slash')
+
+
+
+
+
+
+
+
+
+
+
+
+
     assert.end()
 )
-
-test('Minimal config - missing port', (assert)->
-    config = {}
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-test('Minimal config - invalid port (string)', (assert)->
-    config =
-        port: 'not a port #'
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-test('Minimal config - invalid port (float)', (assert)->
-    config =
-        port: 1.25
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-test('Minimal config - invalid port (negative)', (assert)->
-    config =
-        port: -3
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-test('Minimal config - invalid port (zero)', (assert)->
-    config =
-        port: 0
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-test('Minimal config - invalid port (too big)', (assert)->
-    config =
-        port: 65536
-
-    assert.throws((()-> check(config)), /Invalid port number/)
-    assert.end()
-)
-
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
