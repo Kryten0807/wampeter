@@ -11,9 +11,14 @@ inherits        = require('util').inherits
 http            = require('http')
 _               = require('lodash')
 
+helpers = require('./helpers')
 
 class Router extends WebSocketServer
     constructor: (opts)->
+        # validate the options
+        #
+        helpers.validateConfiguration(opts)
+
         # retrieve configuration and update with default values
         #
         @config = new CConf('router', [], {
