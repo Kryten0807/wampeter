@@ -155,25 +155,26 @@ validateConfiguration = (config)->
 
     # validate wampcra config
     #
-    if config.wampcra?
-        # we must have a type
-        #
-        if not config.wampcra.type?
-            throw new TypeError('Invalid WAMP-CRA configuration - missing type')
-
-        if config.wampcra.type=='static'
-            isValidWAMPCRAStaticUsers(config.wampcra.users)
-
-        else if config.wampcra.type=='dynamic'
-            # we must have an authenticator function
+    if config.auth?
+        if config.auth.wampcra?
+            # we must have a type
             #
-            if not config.wampcra.authenticator?
-                throw new TypeError('Invalid WAMP-CRA configuration - missing authenticator')
+            if not config.auth.wampcra.type?
+                throw new TypeError('Invalid WAMP-CRA configuration - missing type')
 
-            if not _.isFunction(config.wampcra.authenticator)
-                throw new TypeError('Invalid WAMP-CRA configuration - invalid authenticator')
-        else
-            throw new TypeError('Invalid WAMP-CRA configuration - invalid type')
+            if config.auth.wampcra.type=='static'
+                isValidWAMPCRAStaticUsers(config.auth.wampcra.users)
+
+            else if config.auth.wampcra.type=='dynamic'
+                # we must have an authenticator function
+                #
+                if not config.auth.wampcra.authenticator?
+                    throw new TypeError('Invalid WAMP-CRA configuration - missing authenticator')
+
+                if not _.isFunction(config.auth.wampcra.authenticator)
+                    throw new TypeError('Invalid WAMP-CRA configuration - invalid authenticator')
+            else
+                throw new TypeError('Invalid WAMP-CRA configuration - invalid type')
 
     true
 
