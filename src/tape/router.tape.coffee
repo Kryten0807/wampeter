@@ -34,8 +34,6 @@ router = null
 
 # ------------------------------------------------------------------------------
 # Test that the factory method instantiates a router
-#
-# @todo test - invalid router config values
 # ------------------------------------------------------------------------------
 test('Router#constructor - should instantiate a router', (assert)->
 
