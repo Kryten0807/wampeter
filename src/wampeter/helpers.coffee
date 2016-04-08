@@ -14,16 +14,13 @@ isUri = (value)-> /^([0-9a-z_]*\.)*[0-9a-z_]*$/.test(value)
 isValidPort = (p)->
     p? and _.isInteger(p) and 1<=p<=65535
 
-
-
-
 ###*
  * Check that the identifier & config for a role are valid
  *
  * @param  {Object}  config     The permissions for the role
  * @param  {String}  identifier The role identifier
  *
- * @return {Boolean}            True if the role is valid, false otherwise
+ * @return {Boolean}            True if the role is valid
  *
  * @throws {TypeError} if the configuration or identifier are not valid
 ###
@@ -34,7 +31,7 @@ isValidRole = (config, identifier)->
     if not _.isPlainObject(config)
         throw new TypeError('Invalid permissions')
 
-
+    true
 
 ###*
  * Check that the identifier & config describe a valid realm
@@ -42,7 +39,7 @@ isValidRole = (config, identifier)->
  * @param  {Object}  config     The configuration object
  * @param  {String}  identifier The realm identifier
  *
- * @return {Boolean}            True if the realm is valid, false otherwise
+ * @return {Boolean}            True if the realm is valid
  *
  * @throws {TypeError} if the realm configuration or identifier are not valid
 ###
@@ -58,13 +55,16 @@ isValidRealm = (config, identifier)->
         #
         _.forEach(config.roles, isValidRole)
 
+    true
 
-
-
-
-
-
-
+###*
+ * Check a user to see if the configuration is valid
+ *
+ * @param  {Object}  user       The user object
+ * @param  {String}  identifier The identifier
+ *
+ * @return {Boolean}            True if the user is valid
+###
 isValidUser = (user, identifier)->
     # is the value an object? if not, then fail
     #
@@ -83,7 +83,17 @@ isValidUser = (user, identifier)->
     if not _.isString(user.role) and not _.isNumber(user.role)
         throw new TypeError('Invalid WAMP-CRA configuration - invalid user role')
 
+    true
 
+###*
+ * Check the static WAMP-CRA list of users
+ *
+ * @param  {Object}  users The list of users
+ *
+ * @return {Boolean}       True if the list is valid
+ *
+ * @throws {TypeError} if the list of users is not valid
+###
 isValidWAMPCRAStaticUsers = (users)->
     # we must have a list of users
     #
@@ -95,10 +105,11 @@ isValidWAMPCRAStaticUsers = (users)->
     if not _.isPlainObject(users)
         throw new TypeError('Invalid WAMP-CRA configuration - invalid user list')
 
-    # validate each user - each one must have a secret and role
+    # validate each user
     #
     _.forEach(users, isValidUser)
 
+    true
 
 
 
