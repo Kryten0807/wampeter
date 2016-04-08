@@ -17,7 +17,16 @@ isValidPort = (p)->
 
 
 
-
+###*
+ * Check that the identifier & config for a role are valid
+ *
+ * @param  {Object}  config     The permissions for the role
+ * @param  {String}  identifier The role identifier
+ *
+ * @return {Boolean}            True if the role is valid, false otherwise
+ *
+ * @throws {TypeError} if the configuration or identifier are not valid
+###
 isValidRole = (config, identifier)->
     if not isUri(identifier)
         throw new TypeError('Invalid role')
