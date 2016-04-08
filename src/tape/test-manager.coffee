@@ -76,7 +76,11 @@ openConnection = (config)->
 
     connection = new autobahn.Connection(config)
 
-    connection.onopen = (session)-> deferred.resolve([connection, session])
+    connection.onopen = (session)->
+        deferred.resolve([connection, session])
+
+    connection.onclose = (reason, message)->
+        deferred.reject([reason, message])
 
     connection.open()
 
