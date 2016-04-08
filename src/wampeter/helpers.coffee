@@ -65,6 +65,24 @@ isValidRealm = (config, identifier)->
 
 
 
+isValidUser = (user, identifier)->
+    # is the value an object? if not, then fail
+    #
+    if not _.isPlainObject(user)
+        throw new TypeError('Invalid WAMP-CRA configuration - invalid user')
+
+    if not user.secret?
+        throw new TypeError('Invalid WAMP-CRA configuration - missing user secret')
+
+    if not _.isString(user.secret) and not _.isNumber(user.secret)
+        throw new TypeError('Invalid WAMP-CRA configuration - invalid user secret')
+
+    if not user.role?
+        throw new TypeError('Invalid WAMP-CRA configuration - missing user role')
+
+    if not _.isString(user.role) and not _.isNumber(user.role)
+        throw new TypeError('Invalid WAMP-CRA configuration - invalid user role')
+
 
 isValidWAMPCRAStaticUsers = (users)->
     # we must have a list of users
@@ -80,23 +98,6 @@ isValidWAMPCRAStaticUsers = (users)->
     # validate each user - each one must have a secret and role
     #
     _.forEach(users, (value, key)->
-        # is the value an object? if not, then fail
-        #
-        if not _.isPlainObject(value)
-            throw new TypeError('Invalid WAMP-CRA configuration - invalid user')
-
-        if not value.secret?
-            throw new TypeError('Invalid WAMP-CRA configuration - missing user secret')
-
-        if not _.isString(value.secret) and not _.isNumber(value.secret)
-            throw new TypeError('Invalid WAMP-CRA configuration - invalid user secret')
-
-        if not value.role?
-            throw new TypeError('Invalid WAMP-CRA configuration - missing user role')
-
-        if not _.isString(value.role) and not _.isNumber(value.role)
-            throw new TypeError('Invalid WAMP-CRA configuration - invalid user role')
-
     )
 
 
