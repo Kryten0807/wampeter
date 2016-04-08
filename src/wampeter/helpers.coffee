@@ -97,8 +97,7 @@ isValidWAMPCRAStaticUsers = (users)->
 
     # validate each user - each one must have a secret and role
     #
-    _.forEach(users, (value, key)->
-    )
+    _.forEach(users, isValidUser)
 
 
 
