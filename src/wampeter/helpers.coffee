@@ -75,26 +75,7 @@ validateConfiguration = (config)->
         # make sure that all the realm IDs are URIs and do any validation of
         # details in each realm
         #
-        _.forEach(config.realms, (value, key)->
-            if not isUri(key)
-                throw new TypeError('Invalid realm identifier')
-
-            if value.roles?
-                if not _.isPlainObject(value.roles)
-                    throw new TypeError('Invalid roles')
-
-                # check the role identifiers & permissions
-                #
-                _.forEach(value.roles, (v, k)->
-                    # check the identifier
-                    #
-                    if not isUri(k)
-                        throw new TypeError('Invalid role')
-
-                    if not _.isPlainObject(v)
-                        throw new TypeError('Invalid permissions')
-                )
-        )
+        _.forEach(config.realms, isValidRealm)
 
     # validate wampcra config
     #
