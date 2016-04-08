@@ -5,6 +5,7 @@ check = helper.validateConfiguration
 
 # ------------------------------------------------------------------------------
 # Ensure that the configuration includes a port value
+# - must be an integer in the range [1, 65535]
 # ------------------------------------------------------------------------------
 test('Minimal config - passes', (assert)->
     config =
@@ -61,4 +62,5 @@ test('Minimal config - invalid port (too big)', (assert)->
     assert.end()
 )
 
+# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
