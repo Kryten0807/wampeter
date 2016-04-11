@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES=$(ls ./test/*.spec.js)
+FILES=$(ls ./test/*.tape.js)
 
 for f in $FILES; do
 
@@ -8,7 +8,9 @@ for f in $FILES; do
     echo "testing... $f"
     echo "----------------------------------------"
 
-    VISIBLE= ./node_modules/.bin/mocha "$f"
+    # set the VISIBLE envvar to restrict logger output, then run tests
+    #
+    VISIBLE= node "$f" | faucet
 
 
 done

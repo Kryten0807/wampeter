@@ -16,7 +16,7 @@ test:
 	@echo "************************"
 	@echo "* TEST LIBRARY         *"
 	@echo "************************"
-	@./test.sh
+	@./node_modules/.bin/tape test/*.tape.js | faucet
 
 docs:
 	@echo "************************"
@@ -44,5 +44,6 @@ tidy:
 	@echo "***********************"
 	-@rm -rf ./lib/*
 	-@rm -rf ./test/*
+	-@rm -rf ./tape/*
 
 .PHONY: all install test docs

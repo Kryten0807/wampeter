@@ -7,11 +7,11 @@ BASE_URI = 'com.to.inge'
 REALM_URI = BASE_URI + '.world'
 
 VALID_AUTHID = 'nicolas.cage'
-VALID_KEY = 'abc123'
+VALID_SECRET = 'abc123'
 
 ROLE = 'role_1'
 
-authenticator = (realm, authid, details)-> { secret: VALID_KEY, role: ROLE }
+authenticator = (realm, authid, details)-> { secret: VALID_SECRET, role: ROLE }
 
 
 
@@ -26,9 +26,12 @@ ROUTER_CONFIG =
     realms:
         "#{REALM_URI}":
             roles:
-                "#{ROLE}": {
-                    # permissions go here
-                }
+                "#{ROLE}":
+                    '*':
+                        call: true
+                        register: false
+                        subscribe: false
+                        publish: false
 
 
 
@@ -40,7 +43,7 @@ STATIC_CONFIG.auth =
         type: 'static'
         users:
             "#{VALID_AUTHID}":
-                secret: VALID_KEY
+                secret: VALID_SECRET
                 role: ROLE
 
 
@@ -57,7 +60,7 @@ DYNAMIC_CONFIG.auth =
 
 module.exports.realm =        REALM_URI
 module.exports.valid_authid = VALID_AUTHID
-module.exports.valid_key =    VALID_KEY
+module.exports.valid_secret = VALID_SECRET
 module.exports.role =         ROLE
 
 module.exports.static =  STATIC_CONFIG
